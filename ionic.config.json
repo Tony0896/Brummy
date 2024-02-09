@@ -1,0 +1,7 @@
+{
+  "name": "Brummy",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
