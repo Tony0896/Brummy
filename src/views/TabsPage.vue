@@ -1,10 +1,10 @@
 <template>
-  <ion-page>
+  <ion-page class="page">
     <ion-tabs>
       <ion-router-outlet></ion-router-outlet>
       <ion-tab-bar slot="bottom">
         <ion-tab-button tab="tab1" href="/tabs/tab1">
-          <ion-icon aria-hidden="true" :icon="triangle" />
+          <ion-icon aria-hidden="true" :icon="calendar" />
           <ion-label>Tab 1</ion-label>
         </ion-tab-button>
 
@@ -22,7 +22,14 @@
   </ion-page>
 </template>
 
-<script setup lang="ts">
+<script setup >
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { ellipse, square, triangle } from 'ionicons/icons';
+import { calendar, ellipse, square } from 'ionicons/icons';
 </script>
+
+<style>
+#background-content{
+  background-color: blue;
+}
+
+</style>
