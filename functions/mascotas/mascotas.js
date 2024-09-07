@@ -344,7 +344,7 @@ function obtenerComentarios() {
                             let template_comentario = "";
                             result.forEach((data, index) => {
                                 template_comentario += `
-                                <div class="card_comentario">
+                                <div class="card_comentario card2">
                                     <div class="container_comentario">
                                         <div class="left">
                                             <div class="status-ind"></div>
@@ -352,16 +352,22 @@ function obtenerComentarios() {
                                         <div class="right">
                                             <div class="text-wrap">
                                                 <p class="text-content">
-                                                    <a class="">${data.redaccion}</a>
+                                                    <a class="" style="color: #0277bd;font-size: 1rem;font-weight: 600;text-decoration: none;">${
+                                                        data.redaccion
+                                                    }</a>
                                                 </p>
-                                                <p class="time">${data.fecha_comentario_up}</p>
+                                                <p class="time">${volteaFecha(String(data.fecha_comentario_up).split(" ")[0], 1)} ${
+                                    String(data.fecha_comentario_up).split(" ")[1]
+                                } </p>
                                                 <p class="time">${data.nombre_completo_up}</p>
                                             </div>
                                             <div class="button-wrap">
-                                                <button class="primary-cta" onClick ="eliminarComentarioMascota(${data.ID})" >Eliminar</button>
-                                                <button class="secondary-cta" onClick ='editarComentarioMascota(${data.ID} , ${JSON.stringify(
-                                    data.redaccion
-                                )})' >Editar</button>
+                                                <button class="primary-cta" onClick ="eliminarComentarioMascota(${
+                                                    data.ID
+                                                })" style="color: #FF0037;">Eliminar</button>
+                                                <button class="secondary-cta" style="color: #000;" onClick ='editarComentarioMascota(${
+                                                    data.ID
+                                                } , ${JSON.stringify(data.redaccion)})' >Editar</button>
                                             </div>
                                         </div>
                                     </div>
@@ -438,7 +444,7 @@ function guardarComentario() {
 
     let resp_val_form = validarCaracteresForm(arr_data_form);
 
-    console.log(resp_val_form);
+    // console.log(resp_val_form);
 
     if (!resp_val_form) {
         console.log("No paso filtro validacion formulario");
@@ -498,8 +504,6 @@ function guardarComentario() {
 }
 
 function eliminarComentarioMascota(id_comentario) {
-    preloader.show();
-
     const FK_dueno = localStorage.getItem("FK_dueno");
 
     const arr_data = {
@@ -507,38 +511,52 @@ function eliminarComentarioMascota(id_comentario) {
         id_comentario: id_comentario,
     };
 
-    axios
-        .post("./views/mascotas/eliminarComentarioMascota.php", { arr_data: arr_data })
-        .then((response) => {
-            if (response.status == 200) {
-                let success = response.data.success;
-                let result = response.data.result;
-                switch (success) {
-                    case true:
-                        console.info(2);
-                        if (result == "error_execute_query") {
-                        } else {
-                            msj.show("Aviso", "Se elimino el comentario correctamente", [{ text1: "OK" }]);
-                            preloader.hide();
-                            obtenerComentarios();
+    Swal.fire({
+        title: "",
+        text: "¿Estás seguro de querer eliminar el registro?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#7066e0",
+        cancelButtonColor: "#FF0037",
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancelar",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            preloader.show();
+            axios
+                .post("./views/mascotas/eliminarComentarioMascota.php", { arr_data: arr_data })
+                .then((response) => {
+                    if (response.status == 200) {
+                        let success = response.data.success;
+                        let result = response.data.result;
+                        switch (success) {
+                            case true:
+                                console.info(2);
+                                if (result == "error_execute_query") {
+                                } else {
+                                    msj.show("Aviso", "Se elimino el comentario correctamente", [{ text1: "OK" }]);
+                                    preloader.hide();
+                                    obtenerComentarios();
+                                }
+                                break;
+                            case false:
+                                preloader.hide();
+                                msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                                break;
+                            default:
+                                break;
                         }
-                        break;
-                    case false:
-                        preloader.hide();
-                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        })
-        .catch((error) => {
-            preloader.hide();
-            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
-            // console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
-            console.error("Ocurrio un error : " + error);
-        })
-        .finally(() => {});
+                    }
+                })
+                .catch((error) => {
+                    preloader.hide();
+                    msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    // console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+                    console.error("Ocurrio un error : " + error);
+                })
+                .finally(() => {});
+        }
+    });
 }
 
 function editarComentarioMascota(id_comentario, comentario_mascota) {

@@ -226,7 +226,7 @@ if( !$boolean_session ){
                                                             </div>
                                                         </div>
                                                         <div id="div_citas">
-                                                            <canvas id="bar-chart2" width="800" height="450"></canvas>
+                                                            <canvas id="bar-chart2" width="470" height="255"></canvas>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -236,7 +236,7 @@ if( !$boolean_session ){
                                                     <div class="card-body">
                                                         <h4 class="statistics-title">Satisfacción cliente</h4>
                                                         <div id="div_citas">
-                                                            <canvas id="bar-chart" width="800" height="450"></canvas>
+                                                            <canvas id="bar-chart" width="470" height="255"></canvas>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -412,6 +412,7 @@ if( !$boolean_session ){
         <script src="./js/settings.js"></script>
         <script src="./js/configGlobal.js"></script>
         <script src="./js/principal.js"></script>
+        <script src="./js/imagesteplate.js"></script>
         <!-- endinject -->
         <!-- Custom js for this page-->
         <script src="./js/select2.js"></script>
@@ -435,5 +436,7 @@ if( !$boolean_session ){
         <script type="text/javascript" src="./libraries/moment/moment-precise.min.js"></script>
         <script type="text/javascript" src="./libraries/qr/qrious.js"></script>
         <script type="text/javascript" src="./libraries/cropper/cropper.js"></script>
+        <script type="text/javascript" src="./libraries/PDF/pdfmake.min.js"></script>
+        <script type="text/javascript" src="./libraries/PDF/vfs_fonts.js"></script> 
     </body>
 </html>

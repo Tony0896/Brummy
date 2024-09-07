@@ -97,7 +97,7 @@
 
             <div class="card-content" style="display: none">
                 <div class="card-header">
-                    <img src="./images/happy.jpeg" style="width: 60px" />
+                    <img src="./../../images/happy.png" style="width: 60px" />
                 </div>
 
                 <div class="card-body" id="datos_form">

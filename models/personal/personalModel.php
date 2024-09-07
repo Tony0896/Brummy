@@ -1,18 +1,17 @@
 <?php
-namespace inventario\inventarioModel;
+namespace personal\personalModel;
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
     use conexionDB\Code AS ClaseConexionDB;
     require_once ( __DIR__ . '/../../conexion/dataBase.php' );
-    class inventarioModel{ 
-
-        function obtenerInventario(){
+    class personalModel{
+        function obtenerPersonal(){
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $sql = "SELECT * FROM inventario WHERE estatus = 1";
+            $sql = "SELECT * FROM personal_veterinarios WHERE estatus = 1";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -37,62 +36,28 @@ namespace inventario\inventarioModel;
             return $resultJson;
         }
 
-        function guardarProducto($data){
+        function guardarPersonal($data){
             // $request_body = file_get_contents('php://input');
             // $data = json_decode($request_body, true);
 
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $tipoProducto = $data['tipoProducto'];
             $nombre = $data['nombre'];
-            $codigo = $data['codigo'];
-            $descripcion = $data['descripcion'];
-            $precioCompra = $data['precioCompra'];
-            $precioVenta = $data['precioVenta'];
-            $stockMinimo = $data['stockMinimo'];
-            $stockReal = $data['stockReal'];
+            $apellidoP = $data['apellidoP'];
+            $apellidoM = $data['apellidoM'];
+            $telefono = $data['telefono'];
+            $correo = $data['correo'];
+            $motivoMovimiento = 'Personal registrado';
+            $FK_Usuario = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : 1;
+            $nameUsuario = isset($_SESSION['nombre']) ? $_SESSION['nombre'].' '.$_SESSION['apellidoPaterno'].' '.$_SESSION['apellidoMaterno'] : 'app';
 
-            $sql = "INSERT INTO inventario (codigo, nombre, descripcion, tipo, Flagtipo, precioCompra, precioVenta, stockMinimo, stockReal, fechaCreacion)
-            VALUES ('$codigo', '$nombre', '$descripcion', '$tipoProducto', '$tipoProducto', '$precioCompra', '$precioVenta', '$stockMinimo', '$stockReal', current_timestamp())";
-
+            $sql = "INSERT INTO personal_veterinarios (nombre, apellidoP, apellidoM, telefono, correo, fechaUlmitoMovimiento, motivoMovimiento, estatus, FKUsuarioCrea, FlagUsuarioCrea)
+            VALUES ('$nombre', '$apellidoP', '$apellidoM', '$telefono', '$correo', current_timestamp(), '$motivoMovimiento', 1, $FK_Usuario, '$nameUsuario')";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
                     $result = array('success' => true, 'result' => 'Sin Datos');
-                } else {
-                    $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
-                }
-            } catch (mysqli_sql_exception $e) {
-                $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
-            }
-
-            mysqli_close( $conexion );
-            $resultJson = json_encode( $result );
-            return $resultJson;
-        }
-
-        function obtenerProducto($data){
-            // $request_body = file_get_contents('php://input');
-            // $data = json_decode($request_body, true);
-
-            $db = new ClaseConexionDB\ConexionDB();
-            $conexion = $db->getConectaDB();
-
-            $ID = $data['ID'];
-            $sql = "SELECT * FROM inventario WHERE ID = $ID";
-            try{
-                $stmt = mysqli_query($conexion, $sql);
-                if($stmt){
-                    $rowcount=mysqli_num_rows($stmt);   
-                    if ( $rowcount ) {
-                        while($row = mysqli_fetch_assoc($stmt)) {
-                            $array[] =$row;
-                        }
-                        $result = array('success' => true, 'result' => $array);
-                    } else{
-                        $result = array('success' => true, 'result' => 'Sin Datos');
-                    }
                 } else {
                     $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
                 }
@@ -100,45 +65,12 @@ namespace inventario\inventarioModel;
                 $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
             }
             
-            mysqli_close( $conexion );
-            $resultJson = json_encode( $result );
-            return $resultJson;
-        }
-
-        function actualizaProducto($data){
-            // $request_body = file_get_contents('php://input');
-            // $data = json_decode($request_body, true);
-
-            $db = new ClaseConexionDB\ConexionDB();
-            $conexion = $db->getConectaDB();
-
-            $descripcion = $data['descripcion'];
-            $precioCompra = $data['precioCompra'];
-            $precioVenta = $data['precioVenta'];
-            $stockMinimo = $data['stockMinimo'];
-            $stockReal = $data['stockReal'];
-            $ID = $data['ID'];
-
-            $sql = "UPDATE inventario SET descripcion = '$descripcion', precioCompra = '$precioCompra', 
-            precioVenta = '$precioVenta', stockMinimo = '$stockMinimo', stockReal = '$stockReal' WHERE ID = $ID";
-
-            try{
-                $stmt = mysqli_query($conexion, $sql);
-                if($stmt){
-                    $result = array('success' => true, 'result' => 'Sin Datos');
-                } else {
-                    $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
-                }
-            } catch (mysqli_sql_exception $e) {
-                $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
-            }
-
             mysqli_close( $conexion );
             $resultJson = json_encode( $result );
             return $resultJson;
         }
         
-        function eliminarProdcuto($data){
+        function verPerfilPersonal($data){
             // $request_body = file_get_contents('php://input');
             // $data = json_decode($request_body, true);
             
@@ -146,36 +78,7 @@ namespace inventario\inventarioModel;
             $conexion = $db->getConectaDB();
 
             $ID = $data['ID'];
-
-            $sql = "UPDATE inventario SET estatus = 0 WHERE ID = $ID";
-
-            try{
-                $stmt = mysqli_query($conexion, $sql);
-                if($stmt){
-                    $result = array('success' => true, 'result' => 'Sin Datos');
-                } else {
-                    $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
-                }
-            } catch (mysqli_sql_exception $e) {
-                $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
-            }
-
-            mysqli_close( $conexion );
-            $resultJson = json_encode( $result );
-            return $resultJson;
-        }
-
-        function generarReporteInventario($data){
-            // $request_body = file_get_contents('php://input');
-            // $data = json_decode($request_body, true);
-            
-            $db = new ClaseConexionDB\ConexionDB();
-            $conexion = $db->getConectaDB();
-
-            $fechaReporteInicio = $data['fechaReporteInicio'];
-            $fechaReporteFin = $data['fechaReporteFin'];
-
-            $sql = "SELECT SUM(cantidad) as suma, FlagProducto, FKProducto FROM ventadetalle WHERE DATE(fechaCreacion) BETWEEN '$fechaReporteInicio' AND '$fechaReporteFin' GROUP BY FKProducto ORDER BY suma DESC;";
+            $sql = "SELECT * FROM personal_veterinarios WHERE ID = $ID";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -188,6 +91,67 @@ namespace inventario\inventarioModel;
                     } else{
                         $result = array('success' => true, 'result' => 'Sin Datos');
                     }
+                } else {
+                    $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
+                }
+            } catch (mysqli_sql_exception $e) {
+                $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
+            }
+            
+            mysqli_close( $conexion );
+            $resultJson = json_encode( $result );
+            return $resultJson;
+        }
+
+        function actualizarPersonal($data){
+
+            // $request_body = file_get_contents('php://input');
+            // $data = json_decode($request_body, true);
+
+            $db = new ClaseConexionDB\ConexionDB();
+            $conexion = $db->getConectaDB();
+
+            $nombre = $data['nombre'];
+            $apellidoP = $data['apellidoP'];
+            $apellidoM = $data['apellidoM'];
+            $telefono = $data['telefono'];
+            $correo = $data['correo'];
+            $motivoMovimiento = 'Datos Personal Actualizado';
+            $ID = $data['ID'];
+
+            $sql = "UPDATE personal_veterinarios SET nombre = '$nombre', apellidoP = '$apellidoP', apellidoM = '$apellidoM', telefono = '$telefono', 
+            correo = '$correo', fechaUlmitoMovimiento = current_timestamp(), motivoMovimiento = '$motivoMovimiento' WHERE ID = $ID ";
+            try{
+                $stmt = mysqli_query($conexion, $sql);
+                if($stmt){
+                    $result = array('success' => true, 'result' => 'Sin Datos');
+                } else {
+                    $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
+                }
+            } catch (mysqli_sql_exception $e) {
+                $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
+            }
+            
+            mysqli_close( $conexion );
+            $resultJson = json_encode( $result );
+            return $resultJson;
+        }
+
+        function eliminarPersonal($data){
+            // $request_body = file_get_contents('php://input');
+            // $data = json_decode($request_body, true);
+
+            $db = new ClaseConexionDB\ConexionDB();
+            $conexion = $db->getConectaDB();
+
+            $ID = $data['ID'];
+            $motivoMovimiento = 'Personal Eliminado';
+
+            $sql = "UPDATE personal_veterinarios SET estatus = 0, fechaUlmitoMovimiento = current_timestamp(), motivoMovimiento = '$motivoMovimiento' WHERE ID = $ID ";
+            try{
+                $stmt = mysqli_query($conexion, $sql);
+                if($stmt){
+                    $result = array('success' => true, 'result' => 'Sin Datos');
                 } else {
                     $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
                 }

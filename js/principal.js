@@ -555,173 +555,217 @@ function generarCitaPropuesta(ID, fechaPropuesta, fechaRecurrenca, tipoRecurrenc
     $.ajax({
         method: "POST",
         dataType: "JSON",
-        url: "./views/citas/generarCitaPropuesta.php",
-        data: { ID },
+        url: "./views/personal/obtenerPersonal.php",
+        data: {},
     })
         .done(function (results) {
             let success = results.success;
             let result = results.result;
-            let html = "";
+            let html4 = "<option value=''> Selecciona una opción </option>";
             switch (success) {
                 case true:
                     if (result == "Sin Datos") {
-                        msj.show("Aviso", "No se encontró información para generar la cita.", [{ text1: "OK" }]);
                         preloader.hide();
+                        msj.show("Aviso", "No tienes personal registrado aún.", [{ text1: "OK" }]);
                     } else {
-                        let nombreCita = "",
-                            nombreMascota = "",
-                            motivoCita = "",
-                            domicilio = "",
-                            FKnombreCita = "",
-                            FKMascota = "",
-                            FKMotivoCita = "";
                         result.forEach((data, index) => {
-                            console.log(data);
-                            nombreCita = data.nombreCita;
-                            nombreMascota = data.nombreMascota;
-                            motivoCita = data.motivoCita;
-                            domicilio = data.Flagdomicilio;
-                            FKnombreCita = data.FKnombreCita;
-                            FKMascota = data.FKnombreMascota;
-                            FKMotivoCita = data.FKMotivo;
+                            html4 += `<option value='${data.ID}'> ${data.nombre} ${data.apellidoP} ${data.apellidoM} </option>`;
                         });
 
-                        $("#labelModal").html(`Crear Nueva Cita`);
+                        $.ajax({
+                            method: "POST",
+                            dataType: "JSON",
+                            url: "./views/citas/generarCitaPropuesta.php",
+                            data: { ID },
+                        })
+                            .done(function (results) {
+                                let success = results.success;
+                                let result = results.result;
+                                let html = "";
+                                switch (success) {
+                                    case true:
+                                        if (result == "Sin Datos") {
+                                            msj.show("Aviso", "No se encontró información para generar la cita.", [{ text1: "OK" }]);
+                                            preloader.hide();
+                                        } else {
+                                            let nombreCita = "",
+                                                nombreMascota = "",
+                                                motivoCita = "",
+                                                domicilio = "",
+                                                FKnombreCita = "",
+                                                FKMascota = "",
+                                                FKMotivoCita = "";
+                                            result.forEach((data, index) => {
+                                                // console.log(data);
+                                                nombreCita = data.nombreCita;
+                                                nombreMascota = data.nombreMascota;
+                                                motivoCita = data.motivoCita;
+                                                domicilio = data.Flagdomicilio;
+                                                FKnombreCita = data.FKnombreCita;
+                                                FKMascota = data.FKnombreMascota;
+                                                FKMotivoCita = data.FKMotivo;
+                                            });
 
-                        $("#body_modal").html(`<br>
-                            <div id="nuevaCita">
-                                <div class="coolinput">
-                                    <label for="nombreCitainput" class="text">Cliente: </label>
-                                    <input name="Cliente" type="text" class="input obligatorio" id="nombreCitainput" autocomplete="off" readonly/>
-                                    <input type="hidden" id="nombreCita">
-                                </div>
+                                            $("#labelModal").html(`Crear Nueva Cita`);
 
-                                <div class="coolinput">
-                                    <label for="nombreMascota" class="text">Mascota: </label>
-                                    <input name="Mascota" type="text" class="input obligatorio" id="nombreMascotaInput" autocomplete="off" readonly/>
-                                    <input type="hidden" id="nombreMascota">
-                                </div>
+                                            $("#body_modal").html(`<br>
+                                                <div id="nuevaCita">
+                                                    <div class="coolinput">
+                                                        <label for="nombreCitainput" class="text">Cliente: </label>
+                                                        <input name="Cliente" type="text" class="input obligatorio" id="nombreCitainput" autocomplete="off" readonly/>
+                                                        <input type="hidden" id="nombreCita">
+                                                    </div>
+                    
+                                                    <div class="coolinput">
+                                                        <label for="nombreMascota" class="text">Mascota: </label>
+                                                        <input name="Mascota" type="text" class="input obligatorio" id="nombreMascotaInput" autocomplete="off" readonly/>
+                                                        <input type="hidden" id="nombreMascota">
+                                                    </div>
+                    
+                                                    <div class="coolinput">
+                                                        <label for="fechaCita" class="text">Fecha:</label>
+                                                        <!-- <input name="Fecha" type="date" class="input obligatorio" id="fechaCita" autocomplete="off" maxlength"50"/> -->
+                                                        <input name="Fecha" type="text" class="input obligatorio" id="fechaCita" autocomplete="off" />
+                                                    </div>
+                    
+                                                    <div class="coolinput">
+                                                        <label for="horaCita" class="text">Hora:</label>
+                                                        <!-- <input name="Hora" type="time" class="input obligatorio" id="horaCita" autocomplete="off" maxlength"50"/> -->
+                                                        <input type="text" name="Hora" class="input obligatorio" id="horaCita" autocomplete="off"/>
+                                                    </div>
+                    
+                                                    <div class="coolinput">
+                                                        <label for="motivoCita" class="text">Motivo de Cita:</label>
+                                                        <input name="Motivo Cita" type="text" class="input obligatorio" id="motivoCitaInput" autocomplete="off" readonly/>
+                                                        <input type="hidden" id="motivoCita">
+                                                    </div>
+                    
+                                                    <div class="coolinput">
+                                                        <label for="comentariosCita" class="text">Comentarios:</label>
+                                                        <input name="Comentarios" type="text" class="input capitalize" id="comentariosCita" autocomplete="off" maxlength"50"/>
+                                                    </div>
+                    
+                                                    <div class="coolinput">
+                                                        <label for="nombreAtiende" class="text">Atiende: </label>
+                                                        <select class="input capitalize obligatorio" name="Atiende" id="nombreAtiende" style="background-color: rgb(255, 255, 255);width:100%;">
+                                                            ${html4}
+                                                        </select>
+                                                    </div>
+                    
+                                                    <div class="checkbox-wrapper-46" style="margin: 22px 0px 12px 8px;">
+                                                        <input type="checkbox" id="cbx-46" class="inp-cbx" onchange="muestraDomicilio1()"/>
+                                                        <label for="cbx-46" class="cbx">
+                                                            <span style="transform: scale(1.3);">
+                                                                <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                                                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                                                                </svg>
+                                                            </span>
+                                                            <span>¿Es Servicio a domicilio?</span>
+                                                        </label>
+                                                    </div>
+                    
+                                                    <div id="div_servicioDomicilio" style="display: none;padding: 15px 10px 25px;margin: 10px 0px;" class="card2">
+                                                        <div class="coolinput">
+                                                            <label name="Calle" for="direccionVete" class="text">Calle</label>
+                                                            <input name="Calle" type="text" class="input capitalize" id="calleDomi_input" autocomplete="off" />
+                                                        </div>
+                                                        <div style="display:flex; flex-direction: row;">
+                                                            <div class="coolinput">
+                                                                <label name="Número" for="direccionVete" class="text">Número</label>
+                                                                <input name="Número" type="text" class="input capitalize" id="numeroDomi_input" autocomplete="off" />
+                                                            </div>
+                                                            <div class="coolinput" style="margin-left: 20px;">
+                                                                <label name="C.P." for="direccionVete" class="text">C.P.</label>
+                                                                <input name="C.P." type="text" class="input capitalize" id="cpDomi_input" autocomplete="off" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="coolinput">
+                                                            <label name="Col." for="direccionVete" class="text">Col.</label>
+                                                            <input name="Col." type="text" class="input capitalize" id="colDomi_input" autocomplete="off" />
+                                                        </div>
+                                                        <div class="coolinput">
+                                                            <label name="Municipio" for="direccionVete" class="text">Municipio/Alcaldía</label>
+                                                            <input name="Municipio" type="text" class="input capitalize" id="municipioDomi_input" autocomplete="off" />
+                                                        </div>
+                                                        <div class="coolinput">
+                                                            <label name="Estado" for="direccionVete" class="text">Estado</label>
+                                                            <input name="Estado" type="text" class="input capitalize" id="estadoDomi_input" autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                    
+                                                    <input type="hidden" id="fechaRecurrenca">
+                                                    <input type="hidden" id="eachRecurrencia">
+                                                </div>
+                    
+                                                <div class="center-fitcomponent" style="width: 100%;">
+                                                    <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="btnGuardarCita">
+                                                        <span class="text-sm mb-0 span-buttom"> 
+                                                            Guardar
+                                                            <i class="material-icons"> save </i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            `);
 
-                                <div class="coolinput">
-                                    <label for="fechaCita" class="text">Fecha:</label>
-                                    <!-- <input name="Fecha" type="date" class="input obligatorio" id="fechaCita" autocomplete="off" maxlength"50"/> -->
-                                    <input name="Fecha" type="text" class="input obligatorio" id="fechaCita" autocomplete="off" />
-                                </div>
+                                            $("#modalTemplate").modal({
+                                                backdrop: "static",
+                                                keyboard: false,
+                                            });
 
-                                <div class="coolinput">
-                                    <label for="horaCita" class="text">Hora:</label>
-                                    <!-- <input name="Hora" type="time" class="input obligatorio" id="horaCita" autocomplete="off" maxlength"50"/> -->
-                                    <input type="text" name="Hora" class="input obligatorio" id="horaCita" autocomplete="off"/>
-                                </div>
+                                            $("#modalTemplate").modal("show");
 
-                                <div class="coolinput">
-                                    <label for="motivoCita" class="text">Motivo de Cita:</label>
-                                    <input name="Motivo Cita" type="text" class="input obligatorio" id="motivoCitaInput" autocomplete="off" readonly/>
-                                    <input type="hidden" id="motivoCita">
-                                </div>
+                                            $("#btnClose").on("click", () => {
+                                                $("#modalTemplate").modal("hide");
+                                                $("#btnClose").off("click");
+                                            });
 
-                                <div class="coolinput">
-                                    <label for="comentariosCita" class="text">Comentarios:</label>
-                                    <input name="Comentarios" type="text" class="input capitalize" id="comentariosCita" autocomplete="off" maxlength"50"/>
-                                </div>
+                                            $("#nombreCitainput").val(nombreCita);
+                                            $("#nombreMascota").val(FKMascota);
+                                            $("#nombreMascotaInput").val(nombreMascota);
+                                            $("#motivoCitaInput").val(motivoCita);
+                                            $("#motivoCita").val(FKMotivoCita);
+                                            $("#nombreCita").val(FKnombreCita);
+                                            $("#fechaRecurrenca").val(fechaRecurrenca);
+                                            $("#eachRecurrencia").val(tipoRecurrencia);
 
-                                <div class="checkbox-wrapper-46" style="margin: 22px 0px 12px 8px;">
-                                    <input type="checkbox" id="cbx-46" class="inp-cbx" onchange="muestraDomicilio1()"/>
-                                    <label for="cbx-46" class="cbx">
-                                        <span style="transform: scale(1.3);">
-                                            <svg viewBox="0 0 12 10" height="10px" width="12px">
-                                                <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                                            </svg>
-                                        </span>
-                                        <span>¿Es Servicio a domicilio?</span>
-                                    </label>
-                                </div>
+                                            $("#nombreAtiende").select2({
+                                                dropdownParent: $("#modalTemplate"),
+                                            });
 
-                                <div id="div_servicioDomicilio" style="display: none;padding: 15px 10px 25px;margin: 10px 0px;" class="card2">
-                                    <div class="coolinput">
-                                        <label name="Calle" for="direccionVete" class="text">Calle</label>
-                                        <input name="Calle" type="text" class="input capitalize" id="calleDomi_input" autocomplete="off" />
-                                    </div>
-                                    <div style="display:flex; flex-direction: row;">
-                                        <div class="coolinput">
-                                            <label name="Número" for="direccionVete" class="text">Número</label>
-                                            <input name="Número" type="text" class="input capitalize" id="numeroDomi_input" autocomplete="off" />
-                                        </div>
-                                        <div class="coolinput" style="margin-left: 20px;">
-                                            <label name="C.P." for="direccionVete" class="text">C.P.</label>
-                                            <input name="C.P." type="text" class="input capitalize" id="cpDomi_input" autocomplete="off" />
-                                        </div>
-                                    </div>
-                                    <div class="coolinput">
-                                        <label name="Col." for="direccionVete" class="text">Col.</label>
-                                        <input name="Col." type="text" class="input capitalize" id="colDomi_input" autocomplete="off" />
-                                    </div>
-                                    <div class="coolinput">
-                                        <label name="Municipio" for="direccionVete" class="text">Municipio/Alcaldía</label>
-                                        <input name="Municipio" type="text" class="input capitalize" id="municipioDomi_input" autocomplete="off" />
-                                    </div>
-                                    <div class="coolinput">
-                                        <label name="Estado" for="direccionVete" class="text">Estado</label>
-                                        <input name="Estado" type="text" class="input capitalize" id="estadoDomi_input" autocomplete="off" />
-                                    </div>
-                                </div>
+                                            if (domicilio == 1) {
+                                                $("#cbx-46").prop("checked", true);
+                                                muestraDomicilio1();
+                                            }
 
-                                <input type="hidden" id="fechaRecurrenca">
-                                <input type="hidden" id="eachRecurrencia">
-                            </div>
+                                            $("#horaCita").mdtimepicker({
+                                                timeFormat: "hh:mm:ss", // format of the time value (data-time attribute)
+                                                format: "hh:mm", // format of the input value
+                                                theme: "blue", // theme of the timepicker
+                                                clearBtn: true, // determines if clear button is visible
+                                                is24hour: true, // determines if the clock will use 24-hour format in the UI; format config will be forced to `hh:mm` if not specified
+                                            });
 
-                            <div class="center-fitcomponent" style="width: 100%;">
-                                <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="btnGuardarCita">
-                                    <span class="text-sm mb-0 span-buttom"> 
-                                        Guardar
-                                        <i class="material-icons"> save </i>
-                                    </span>
-                                </div>
-                            </div>
-                        `);
+                                            $("#fechaCita").val(fechaPropuesta);
+                                            $("#fechaCita").duDatepicker({ format: "dd-mm-yyyy", clearBtn: true, cancelBtn: true });
 
-                        $("#modalTemplate").modal({
-                            backdrop: "static",
-                            keyboard: false,
-                        });
+                                            $("#btnGuardarCita").click(() => {
+                                                validacioesCita1(IDRec);
+                                            });
 
-                        $("#modalTemplate").modal("show");
-
-                        $("#btnClose").on("click", () => {
-                            $("#modalTemplate").modal("hide");
-                            $("#btnClose").off("click");
-                        });
-
-                        $("#nombreCitainput").val(nombreCita);
-                        $("#nombreMascota").val(FKMascota);
-                        $("#nombreMascotaInput").val(nombreMascota);
-                        $("#motivoCitaInput").val(motivoCita);
-                        $("#motivoCita").val(FKMotivoCita);
-                        $("#nombreCita").val(FKnombreCita);
-                        $("#fechaRecurrenca").val(fechaRecurrenca);
-                        $("#eachRecurrencia").val(tipoRecurrencia);
-
-                        if (domicilio == 1) {
-                            $("#cbx-46").prop("checked", true);
-                            muestraDomicilio1();
-                        }
-
-                        $("#horaCita").mdtimepicker({
-                            timeFormat: "hh:mm:ss", // format of the time value (data-time attribute)
-                            format: "hh:mm", // format of the input value
-                            theme: "blue", // theme of the timepicker
-                            clearBtn: true, // determines if clear button is visible
-                            is24hour: true, // determines if the clock will use 24-hour format in the UI; format config will be forced to `hh:mm` if not specified
-                        });
-
-                        $("#fechaCita").val(fechaPropuesta);
-                        $("#fechaCita").duDatepicker({ format: "dd-mm-yyyy", clearBtn: true, cancelBtn: true });
-
-                        $("#btnGuardarCita").click(() => {
-                            validacioesCita1(IDRec);
-                        });
-
-                        preloader.hide();
+                                            preloader.hide();
+                                        }
+                                        break;
+                                    case false:
+                                        preloader.hide();
+                                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                                        break;
+                                }
+                            })
+                            .fail(function (jqXHR, textStatus, errorThrown) {
+                                preloader.hide();
+                                msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                                console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+                            });
                     }
                     break;
                 case false:
@@ -798,6 +842,11 @@ function cargaTemplate(id, permiso) {
 
         case "person_menu":
             cargaTemplateFrecuentes();
+            activeSubmenu(id);
+            break;
+
+        case "supervised_menu":
+            cargaTemplatePersonal();
             activeSubmenu(id);
             break;
 
@@ -906,6 +955,15 @@ function cargaTemplateFrecuentes() {
     });
 }
 
+function cargaTemplatePersonal() {
+    $("#contenido").load("templates/personal/personal.php", function (responseTxt, statusTxt, xhr) {
+        if (statusTxt != "error") {
+            changeViewMenuIcon();
+            // documentReadyVacantes();
+        }
+    });
+}
+
 function validacioesCita1(IDRec) {
     let valido = true;
     let fecha_actual_val = new Date();
@@ -950,9 +1008,16 @@ function validacioesCita1(IDRec) {
             estadoDomi.replaceAll("'", '"');
 
             if (!calleDomi || !numeroDomi || !cpDomi || !colDomi || !municipioDomi || !estadoDomi) {
+                preloader.hide();
                 msj.show("Aviso", "El domicilio esta incompleto", [{ text1: "OK" }]);
                 return false;
             }
+        }
+
+        if (!$("#nombreAtiende").val()) {
+            preloader.hide();
+            msj.show("Aviso", "Debes indicar quien va a atender la cita.", [{ text1: "OK" }]);
+            return false;
         }
 
         $.ajax({
@@ -1025,6 +1090,8 @@ function guardarCita1(IDRec) {
     let motivoCita = $("#motivoCitaInput").val();
     let comentariosCita = String($("#comentariosCita").val());
     let FKMotivo = $("#motivoCita").val();
+    let FKAtiende = $("#nombreAtiende").val();
+    let nombreAtiende = String($("#nombreAtiende").find("option:selected").text());
 
     let calleDomi = "";
     let numeroDomi = "";
@@ -1060,11 +1127,11 @@ function guardarCita1(IDRec) {
         Recurrencia = 0;
     } else {
         Recurrencia = 1;
-        fechaRecurrenca = volteaFecha($("#fechaRecurrenca").val(), 2);
+        fechaRecurrenca = volteaFecha($("#fechaCita").val(), 2);
         if (tipoRecurrencia == 7 || tipoRecurrencia == 14) {
-            moment(fechaRecurrenca).add(Number(tipoRecurrencia), "days").format("YYYY-MM-DD");
+            fechaRecurrenca = moment(fechaRecurrenca).add(Number(tipoRecurrencia), "days").format("YYYY-MM-DD");
         } else if (tipoRecurrencia == 30) {
-            moment(fechaRecurrenca).add(Number(1), "month").format("YYYY-MM-DD");
+            fechaRecurrenca = moment(fechaRecurrenca).add(Number(1), "month").format("YYYY-MM-DD");
         }
     }
 
@@ -1098,6 +1165,8 @@ function guardarCita1(IDRec) {
             Recurrencia,
             tipoRecurrencia,
             fechaRecurrenca,
+            FKAtiende,
+            nombreAtiende,
         },
     })
         .done(function (results) {
@@ -1288,13 +1357,17 @@ function getCitasPorConfirmarMes() {
 
 function validaFechasConfirmar(fecha, nombreCliente, nombreMascota, ID_mov, fechaRecurrenca, tipoRecurrencia, ID) {
     let html = "";
+    // console.log(moment(fecha).format("YYYY-MM-DD"), nombreCliente, nombreMascota, ID_mov, fechaRecurrenca, tipoRecurrencia, ID);
     // console.log(tipoRecurrencia);
     if (tipoRecurrencia == 30) {
-        fecha = moment(fecha).add(Number(1), "months").format("YYYY-MM-DD");
+        // fecha = moment(fecha).add(Number(1), "months").format("YYYY-MM-DD");
+        fecha = moment(fecha).format("YYYY-MM-DD");
     } else if (tipoRecurrencia == 14) {
-        fecha = moment(fecha).add(Number(2), "weeks").format("YYYY-MM-DD");
+        // fecha = moment(fecha).add(Number(2), "weeks").format("YYYY-MM-DD");
+        fecha = moment(fecha).format("YYYY-MM-DD");
     } else if (tipoRecurrencia == 7) {
-        fecha = moment(fecha).add(Number(1), "weeks").format("YYYY-MM-DD");
+        // fecha = moment(fecha).add(Number(1), "weeks").format("YYYY-MM-DD");
+        fecha = moment(fecha).format("YYYY-MM-DD");
     } else {
         fecha = moment(fecha).add(Number(1), "years").format("YYYY-MM-DD");
     }
@@ -1338,13 +1411,27 @@ function validaFechasConfirmar(fecha, nombreCliente, nombreMascota, ID_mov, fech
             // console.log("no mostrar");
         }
     } else {
-        // console.log("gg2");
+        if (tipoRecurrencia == 30) {
+            fecha = moment(fecha).add(Number(1), "months").format("YYYY-MM-DD");
+        } else if (tipoRecurrencia == 14) {
+            fecha = moment(fecha).add(Number(2), "weeks").format("YYYY-MM-DD");
+        } else if (tipoRecurrencia == 7) {
+            fecha = moment(fecha).add(Number(1), "weeks").format("YYYY-MM-DD");
+        } else {
+            fecha = moment(fecha).add(Number(1), "years").format("YYYY-MM-DD");
+        }
+        // console.log("gg2", ID_mov, tipoRecurrencia);
         let start = moment(getDateActual(), "YYYY-MM-DD");
         let end = moment(fecha, "YYYY-MM-DD");
 
+        // console.log(start, end);
         //Difference in number of days
         let days = moment.duration(end.diff(start)).asDays();
         // console.log(days);
-        validaFechasConfirmar(end, nombreCliente, nombreMascota, ID_mov, fechaRecurrenca, tipoRecurrencia, ID);
+
+        if (days >= 5) {
+        } else {
+            validaFechasConfirmar(end, nombreCliente, nombreMascota, ID_mov, fechaRecurrenca, tipoRecurrencia, ID);
+        }
     }
 }

@@ -78,6 +78,11 @@ function obtenerVentas(mes, anio) {
                                         }, ${data.cambioVenta})">
                                             <span class="text-sm mb-0"><i class="material-icons"> shopping_cart </i></span>
                                         </div>
+                                        <div class="buttom-green buttom button-sinText mx-1" title="Compartir" onclick="generarTicketVenta(${
+                                            data.ID
+                                        }, ${data.cambioVenta})">
+                                            <span class="text-sm mb-0"><i class="material-icons"> download </i></span>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>`;
@@ -274,7 +279,7 @@ function verDetalleVenta(ID, cambioVenta) {
                                                 <span>$${CantidadConCommas(efectivo)}</span>
                                             </div>
                                             <div class="details">
-                                                <span>Cabmio:</span>
+                                                <span>Cambio:</span>
                                                 <span id="totalDescuentos">$${CantidadConCommas(cambio)}</span>
                                             </div>
                                              <hr>
@@ -282,13 +287,17 @@ function verDetalleVenta(ID, cambioVenta) {
                                                 cambioVenta == 1
                                                     ? `<div class="checkout--footer">
                                                     <label class="price" style="margin-right: auto;font-size: 18px;">TOTAL DEVUELTO</label>
-                                                    <label class="price" id="priceTotal_text_EDIT"><sup>$</sup>${CantidadConCommas(devuelto)}</label>
+                                                    <label class="price" id="priceTotal_text_EDIT"><sup>$</sup>${CantidadConCommas(
+                                                        Number(devuelto).toFixed(2)
+                                                    )}</label>
                                                     <input type="hidden" id="priceTotal" value="0">
                                                     <hr>
                                                 </div>`
                                                     : `<div class="checkout--footer div_editaVentaProuct" id="div_devolver" style="display: none;">
                                                     <label class="price" style="margin-right: auto;font-size: 18px;">TOTAL A DEVOLVER</label>
-                                                    <label class="price" id="priceTotal_text_EDIT"><sup>$</sup>${CantidadConCommas(0)}</label>
+                                                    <label class="price" id="priceTotal_text_EDIT"><sup>$</sup>${CantidadConCommas(
+                                                        Number(0).toFixed(2)
+                                                    )}</label>
                                                     <input type="hidden" id="priceTotal" value="0">
                                                     <hr>
                                                 </div>`
@@ -523,4 +532,442 @@ function cerrarCarritoPost(ID) {
                 });
         }
     });
+}
+
+function generarTicketVenta(ID, cambioVenta) {
+    preloader.show();
+    $.ajax({
+        method: "POST",
+        dataType: "JSON",
+        url: "./views/store/obtenerDataVeterinaria.php",
+        data: {},
+    })
+        .done(function (results) {
+            let success = results.success;
+            let result = results.result;
+            switch (success) {
+                case true:
+                    if (result == "Sin Datos") {
+                        preloader.hide();
+                    } else {
+                        let nombreVete, calle, col, cp, descripcion, eslogan, estado, municipio, numero, pais, urlLogo, telefono;
+                        result.forEach((data, index) => {
+                            nombreVete = data.nombreVete ? data.nombreVete : "";
+                            calle = data.calle ? data.calle : "";
+                            col = data.col ? data.col : "";
+                            cp = data.cp ? data.cp : "";
+                            descripcion = data.descripcion ? data.descripcion : "";
+                            eslogan = data.eslogan ? data.eslogan : "";
+                            estado = data.estado ? data.estado : "";
+                            municipio = data.municipio ? data.municipio : "";
+                            numero = data.numero ? data.numero : "";
+                            pais = data.pais ? data.pais : "";
+                            urlLogo = data.urlLogo ? data.urlLogo : "";
+                        });
+
+                        let directionCompleta = calle ? `${calle} ${numero}, ${cp} ${col}, ${municipio} ${estado}` : "";
+
+                        $.ajax({
+                            method: "POST",
+                            dataType: "JSON",
+                            url: "./views/store/obtenerContactosVete.php",
+                            data: {},
+                        })
+                            .done(function (results) {
+                                let success = results.success;
+                                let result = results.result;
+                                switch (success) {
+                                    case true:
+                                        if (result == "Sin Datos") {
+                                        } else {
+                                            telefono = result[0].numero;
+                                        }
+                                        $.ajax({
+                                            method: "POST",
+                                            dataType: "JSON",
+                                            url: "./views/ventas/obtenerVenta.php",
+                                            data: { ID, cambioVenta },
+                                        })
+                                            .done(function (results) {
+                                                let success = results.success;
+                                                let result = results.result;
+                                                let html = "",
+                                                    nombreCliente,
+                                                    cambio,
+                                                    efectivo,
+                                                    price,
+                                                    Fecha,
+                                                    devuelto;
+                                                switch (success) {
+                                                    case true:
+                                                        if (result == "Sin Datos") {
+                                                            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                                                            preloader.hide();
+                                                        } else {
+                                                            let data2 = [],
+                                                                data1 = [],
+                                                                totalDevuelto = 0;
+                                                            folioVta = `VTA-${ID}`;
+                                                            result.forEach((data, index) => {
+                                                                nombreCliente = data.nombreCliente;
+                                                                Fecha = obtenerFechaLarga(data.Fecha + " 00:00:00");
+                                                                cambio = data.cambio;
+                                                                devuelto = data.devuelto;
+                                                                if (Number(cambio) <= 0) {
+                                                                    efectivo = data.price;
+                                                                } else {
+                                                                    efectivo = data.efectivo;
+                                                                }
+                                                                price = data.price;
+
+                                                                data2 = [
+                                                                    ...data2,
+                                                                    {
+                                                                        style: "columnas",
+                                                                        italics: false,
+                                                                        columns: [
+                                                                            {
+                                                                                text: [
+                                                                                    {
+                                                                                        text: `${data.FlagProducto}\n`,
+                                                                                        style: "bold",
+                                                                                        alignment: "left",
+                                                                                    },
+                                                                                    { text: `${data.tipo}`, alignment: "left", fontSize: 9 },
+                                                                                ],
+                                                                                margin: [30, 10, 15, 0], //left, top, Rigth, bottom
+                                                                            },
+                                                                            {
+                                                                                text: Number(data.cantidad),
+                                                                                margin: [30, 10, 15, 0], //left, top, Rigth, bottom
+                                                                            },
+                                                                            {
+                                                                                text: `$${CantidadConCommas(data.precioVenta)} c/u`,
+                                                                                margin: [30, 10, 15, 0], //left, top, Rigth, bottom
+                                                                            },
+                                                                            {
+                                                                                text: `$${CantidadConCommas(data.total)}`,
+                                                                                margin: [30, 10, 15, 0], //left, top, Rigth, bottom
+                                                                            },
+                                                                        ],
+                                                                        font: "Arial",
+                                                                    },
+                                                                    cambioVenta == 1 && Number(data.newStock) > 0
+                                                                        ? {
+                                                                              style: "dataCliente",
+                                                                              italics: false,
+                                                                              margin: [30, 10, 30, 0], //left, top, Rigth, bottom
+                                                                              text: [
+                                                                                  {
+                                                                                      text: `${Number(data.newStock)} cancelado(s).\n`,
+                                                                                      style: "bold",
+                                                                                      italics: true,
+                                                                                  },
+                                                                              ],
+                                                                              font: "Arial",
+                                                                          }
+                                                                        : "",
+                                                                    {
+                                                                        margin: [30, 3, 28, 5], //left, top, Rigth, bottom
+                                                                        text: [
+                                                                            {
+                                                                                text: `_____________________________________________________________________________________________________________________`,
+                                                                                fontSize: 7,
+                                                                                alignment: "center",
+                                                                            },
+                                                                        ],
+                                                                        font: "Arial",
+                                                                    },
+                                                                ];
+                                                            });
+
+                                                            if (cambioVenta == 1) {
+                                                                totalDevuelto = `$${CantidadConCommas(Number(devuelto).toFixed(2))}`;
+                                                            } else {
+                                                                totalDevuelto = `$${CantidadConCommas(Number(0).toFixed(2))}`;
+                                                            }
+                                                            data1 = {
+                                                                nombreVete,
+                                                                eslogan,
+                                                                directionCompleta,
+                                                                telefono,
+                                                                folioVta,
+                                                                nombreCliente,
+                                                                Fecha,
+                                                                totalSubtotal: `$${CantidadConCommas(price)}`,
+                                                                totalDescuentos: `$0.00`,
+                                                                totalVenta: `${CantidadConCommas(price)}`,
+                                                                efectivo: `$${CantidadConCommas(efectivo)}`,
+                                                                cambio: `$${CantidadConCommas(cambio)}`,
+                                                                totalDevuelto,
+                                                            };
+                                                            downloadPDF(data1, data2);
+                                                        }
+                                                        break;
+                                                    case false:
+                                                        preloader.hide();
+                                                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                                                        break;
+                                                }
+                                            })
+                                            .fail(function (jqXHR, textStatus, errorThrown) {
+                                                preloader.hide();
+                                                msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                                                console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+                                            });
+                                        break;
+                                    case false:
+                                        preloader.hide();
+                                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                                        break;
+                                }
+                            })
+                            .fail(function (jqXHR, textStatus, errorThrown) {
+                                preloader.hide();
+                                msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                                console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+                            });
+                    }
+                    break;
+                case false:
+                    preloader.hide();
+                    msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    break;
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            preloader.hide();
+            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+            console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+        });
+}
+
+function downloadPDF(result1, result2) {
+    console.log(result1, result2);
+    let url = getCurrentURL();
+    pdfMake.fonts = {
+        Roboto: {
+            normal: "Roboto-Regular.ttf",
+            bold: "Roboto-Medium.ttf",
+            italics: "Roboto-Italic.ttf",
+            bolditalics: "Roboto-Italic.ttf",
+        },
+        Arial: {
+            normal: url + "/Brummy/css/assets/fonts/arial.ttf",
+            bold: url + "/Brummy/css/assets/fonts/arialbd.ttf",
+            italics: url + "/Brummy/css/assets/fonts/ariali.ttf",
+            bolditalics: url + "/Brummy/css/assets/fonts/arialbi.ttf",
+        },
+    };
+
+    let hora, dia, mes, anio, fechaRegistro;
+    let horas = "08:00:00";
+    fechaRegistro = "01-10-2024";
+    hora = horas.split(":");
+    dia = fechaRegistro.split("-")[0];
+    mes = fechaRegistro.split("-")[1];
+    anio = fechaRegistro.split("-")[2];
+
+    const date = new Date(anio, mes - 1, dia);
+    const month = date.toLocaleString("default", { month: "long" });
+
+    let docDefinition = {
+        content: [
+            {
+                style: "columnas",
+                italics: false,
+                columns: [
+                    {
+                        image: img1,
+                        width: 150,
+                        fit: [100, 100],
+                        margin: [0, 0, 0, 0], //left, top, Rigth, bottom
+                    },
+                    {
+                        text: `${result1.nombreVete}\n${result1.eslogan}\n\n${result1.directionCompleta}.\n\n${result1.telefono}`,
+                        width: "*",
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                        style: "header2",
+                    },
+                ],
+                font: "Arial",
+            },
+            {
+                style: "dataCliente",
+                italics: false,
+                margin: [30, 12, 30, 0], //left, top, Rigth, bottom
+                text: [`Folio venta: ${result1.folioVta}\nCliente: ${result1.nombreCliente}\nFecha: ${result1.Fecha}\n\nCarrito:\n`],
+                font: "Arial",
+            },
+            result2,
+            {
+                style: "columnas",
+                italics: false,
+                columns: [
+                    {
+                        text: [{ text: "\nSubtotal:\n", style: "bold", alignment: "left" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                    {
+                        text: [{ text: `\n${result1.totalSubtotal}` + "\n", style: "bold", alignment: "right" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                ],
+                font: "Arial",
+            },
+            {
+                style: "columnas",
+                italics: false,
+                columns: [
+                    {
+                        text: [{ text: "\nDescuentos de productos:\n", alignment: "left" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                    {
+                        text: [{ text: `\n${result1.totalDescuentos}` + "\n", style: "bold", alignment: "right" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                ],
+                font: "Arial",
+            },
+            {
+                style: "columnas",
+                italics: false,
+                columns: [
+                    {
+                        text: [{ text: "\nTOTAL DE VENTA\n", style: "bold", alignment: "left" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                    {
+                        text: [{ text: `\n${result1.totalVenta}\n`, style: "bold", alignment: "right" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                ],
+                font: "Arial",
+            },
+            {
+                style: "columnas",
+                italics: false,
+                columns: [
+                    {
+                        text: [{ text: "\nEfectivo:\n", alignment: "left" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                    {
+                        text: [{ text: `\n${result1.efectivo}` + "\n", style: "bold", alignment: "right" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                ],
+                font: "Arial",
+            },
+            ,
+            {
+                style: "columnas",
+                italics: false,
+                columns: [
+                    {
+                        text: [{ text: "\nCambio:\n", alignment: "left" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                    {
+                        text: [{ text: `\n${result1.cambio}` + "\n", style: "bold", alignment: "right" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                ],
+                font: "Arial",
+            },
+            {
+                style: "columnas",
+                italics: false,
+                columns: [
+                    {
+                        text: [{ text: "\nTOTAL DEVUELTO\n\n", style: "bold", alignment: "left" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                    {
+                        text: [{ text: `\n${result1.totalDevuelto}\n\n`, style: "bold", alignment: "right" }],
+                        margin: [30, 0, 30, 0], //left, top, Rigth, bottom
+                    },
+                ],
+                font: "Arial",
+            },
+            ,
+            {
+                margin: [30, 3, 28, 5], //left, top, Rigth, bottom
+                text: [
+                    {
+                        text: `_____________________________________________________________________________________________________________________`,
+                        fontSize: 7,
+                        alignment: "center",
+                    },
+                ],
+                font: "Arial",
+            },
+            {
+                style: "dataCliente",
+                margin: [30, 8, 30, 0], //left, top, Rigth, bottom
+                text: [{ text: `\nDesarrollado por\n`, style: "bold", italics: true, fontSize: 9 }],
+                font: "Arial",
+                alignment: "center",
+            },
+            {
+                image: img2,
+                width: 150,
+                fit: [100, 100],
+                margin: [0, 0, 0, 0], //left, top, Rigth, bottom
+                alignment: "center",
+            },
+            {
+                style: "dataCliente",
+                margin: [30, 8, 30, 0], //left, top, Rigth, bottom
+                text: [{ text: `\nEste documento no es un comprobante fiscal.\n`, style: "bold", italics: true, fontSize: 9 }],
+                font: "Arial",
+                alignment: "center",
+            },
+        ],
+        styles: {
+            header: {
+                fontSize: 11,
+                bold: true,
+                alignment: "center",
+                margin: [0, 30, 0, 0], //left, top, Rigth, bottom
+            },
+            header2: {
+                fontSize: 11,
+                bold: true,
+                alignment: "left",
+                margin: [0, 30, 0, 30], //left, top, Rigth, bottom
+            },
+            text: {
+                fontSize: 11,
+                italics: true,
+                alignment: "justify",
+                margin: [30, 0, 30, 40], //left, top, Rigth, bottom
+                bold: false,
+            },
+            underline: {
+                decoration: "underline",
+            },
+            bold: {
+                bold: true,
+            },
+            columnas: {
+                fontSize: 11,
+                bold: false,
+                alignment: "center",
+            },
+            footer: {
+                fontSize: 11,
+                bold: true,
+                alignment: "right",
+            },
+        },
+    };
+
+    let now = String(Date.now());
+    let lastFive = now.substr(now.length - 8);
+    let namePDF = "VTABRHP_VTA-22" + lastFive + ".pdf";
+    let pdf = pdfMake.createPdf(docDefinition);
+    pdf.download(namePDF);
+    preloader.hide();
 }

@@ -5,7 +5,7 @@ namespace store\storeModel;
 // error_reporting(E_ALL);
 
     use conexionDB\Code AS ClaseConexionDB;
-    require_once ( __DIR__ . './../../conexion/dataBase.php' );
+    require_once ( __DIR__ . '/../../conexion/dataBase.php' );
     class storeModel{ 
 
         function obtenerDataVeterinaria($empresa){

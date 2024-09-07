@@ -5,7 +5,7 @@ namespace login\loginModel;
 // error_reporting(E_ALL);
 
     use conexionDB\Code AS ClaseConexionDB;
-    require_once ( __DIR__ . './../../conexion/dataBase.php' );
+    require_once ( __DIR__ . '/../../conexion/dataBase.php' );
     class loginModel{ 
 
         function validarLogin($data){

@@ -5,7 +5,7 @@ namespace citas\citasModel;
 // error_reporting(E_ALL);
 
     use conexionDB\Code AS ClaseConexionDB;
-    require_once ( __DIR__ . './../../conexion/dataBase.php' );
+    require_once ( __DIR__ . '/../../conexion/dataBase.php' );
     class citasModel{ 
 
         function InsertDomicilio($FKNombreCliente, $nombreCliente, $calle, $numero, $cp, $col, $municipio, $estado){
@@ -58,7 +58,7 @@ namespace citas\citasModel;
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $sql = "SELECT ID FROM recurrencia_clientes WHERE FKNombreCliente = '$FKNombreCliente' AND estatus = 1";
+            // $sql = "SELECT ID FROM recurrencia_clientes WHERE FKNombreCliente = '$FKNombreCliente' AND estatus = 1";
             $FK_Usuario = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : 1;
             $nameUsuario = isset($_SESSION['nombre']) ? $_SESSION['nombre'].' '.$_SESSION['apellidoPaterno'].' '.$_SESSION['apellidoMaterno'] : 'app';
 
@@ -154,8 +154,11 @@ namespace citas\citasModel;
             $tipoRecurrencia = $data['tipoRecurrencia'];
             $fechaRecurrenca = $data['fechaRecurrenca'];
 
-            $sql = "INSERT INTO citas (FKnombreCita, nombreCita, FKnombreMascota, nombreMascota, fechaCita, horaCita, motivoCita, comentariosCita, FKMotivo, fechaHoraCita, Flagdomicilio)
-            VALUES ('$FKnombreCita', '$nombreCita', '$FKnombreMascota', '$nombreMascota', '$fechaCita', '$horaCita', '$motivoCita', '$comentariosCita', '$FKMotivo', '$fechaHoraCita', $domicilio)";
+            $FKAtiende = $data['FKAtiende'];
+            $nombreAtiende = $data['nombreAtiende'];
+
+            $sql = "INSERT INTO citas (FKnombreCita, nombreCita, FKnombreMascota, nombreMascota, fechaCita, horaCita, motivoCita, comentariosCita, FKMotivo, fechaHoraCita, Flagdomicilio, FKAtiende, nombreAtiende)
+            VALUES ('$FKnombreCita', '$nombreCita', '$FKnombreMascota', '$nombreMascota', '$fechaCita', '$horaCita', '$motivoCita', '$comentariosCita', '$FKMotivo', '$fechaHoraCita', $domicilio, $FKAtiende, '$nombreAtiende')";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -402,12 +405,12 @@ namespace citas\citasModel;
             $agendada = $data['agendada'];
             $tipoRecurrencia = $data['tipoRecurrencia'];
 
-            if($tipoRecurrencia == 7 || $tipoRecurrencia == 14 || $tipoRecurrencia == 30){
-                $result = array('success' => true, 'result' => 'Sin Datos');
-            } else {
+            // if($tipoRecurrencia == 7 || $tipoRecurrencia == 14 || $tipoRecurrencia == 30){
+            //     $result = array('success' => true, 'result' => 'Sin Datos');
+            // } else {
                 $db = new ClaseConexionDB\ConexionDB();
                 $conexion = $db->getConectaDB();
-                    $sql = "UPDATE recurrencia_clientes SET estatus = 0, agendada = $agendada WHERE ID = {$ID}";
+                $sql = "UPDATE recurrencia_clientes SET estatus = 0, agendada = $agendada WHERE ID = {$ID}";
                 try{
                     $stmt = mysqli_query($conexion, $sql);
                     if($stmt){
@@ -419,7 +422,7 @@ namespace citas\citasModel;
                     $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
                 }
                 mysqli_close( $conexion );
-            }
+            // }
 
             $resultJson = json_encode( $result );
             return $resultJson;   

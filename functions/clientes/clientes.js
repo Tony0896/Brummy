@@ -293,7 +293,7 @@ function guardarCliente() {
             return false;
         }
 
-        console.log(resp_val_form);
+        // console.log(resp_val_form);
 
         nombre.replaceAll("'", '"');
         apellidoP.replaceAll("'", '"');
@@ -617,7 +617,7 @@ function verDetalleVentaCliente(ID) {
                                                 <span>$${efectivo}</span>
                                             </div>
                                             <div class="details">
-                                                <span>Cabmio:</span>
+                                                <span>Cambio:</span>
                                                 <span id="totalDescuentos">$${cambio}</span>
                                             </div>
                                             <hr>

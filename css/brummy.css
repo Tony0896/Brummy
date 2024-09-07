@@ -914,19 +914,19 @@ h2 {
 /* * PROTOTIPE COMENTS */
 
 .card_comentario {
-    width: fit-content;
-    background-color: #f2f3f7;
+    width: 90%;
+    /* background-color: #f2f3f7; */
     border-radius: 0.75em;
     cursor: pointer;
     transition: ease 0.2s;
-    box-shadow: 1em 1em 1em #d8dae0b1, -0.75em -0.75em 1em #ffffff;
-    border: 1.5px solid #f2f3f7;
+    /* box-shadow: 1em 1em 1em #d8dae0b1, -0.75em -0.75em 1em #ffffff; */
+    /* border: 1.5px solid #f2f3f7; */
     margin-bottom: 20px;
 }
 
 .card_comentario:hover {
-    background-color: #d3ddf1;
-    border: 1.5px solid #1677ff;
+    background-color: #0090710f;
+    border: 1.5px solid #009071;
 }
 
 .container_comentario {
@@ -957,6 +957,7 @@ h2 {
 .time {
     font-size: 0.875em;
     color: #777;
+    font-style: italic;
 }
 
 .text-link {
