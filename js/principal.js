@@ -960,6 +960,11 @@ function cargaTemplate(id, permiso) {
             activeSubmenu(id);
             break;
 
+        case "redeem_menu":
+            cargaTemplatePromos();
+            activeSubmenu(id);
+            break;
+
         default:
             preloader.hide();
             console.log("sin menu");
@@ -1067,6 +1072,15 @@ function cargaTemplateFrecuentes() {
 
 function cargaTemplatePersonal() {
     $("#contenido").load("templates/personal/personal.php", function (responseTxt, statusTxt, xhr) {
+        if (statusTxt != "error") {
+            changeViewMenuIcon();
+            // documentReadyVacantes();
+        }
+    });
+}
+
+function cargaTemplatePromos() {
+    $("#contenido").load("templates/promos/promos.php", function (responseTxt, statusTxt, xhr) {
         if (statusTxt != "error") {
             changeViewMenuIcon();
             // documentReadyVacantes();

@@ -26,7 +26,7 @@ function dataVenta() {
                     $.ajax({
                         method: "POST",
                         dataType: "JSON",
-                        url: "./views/inventario/obtenerInventario.php",
+                        url: "./views/inventario/obtenerInventario2.php",
                         data: {},
                     })
                         .done(function (results) {

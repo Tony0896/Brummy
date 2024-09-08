@@ -20,6 +20,12 @@
             return $result_model;
         }
 
+        function obtenerInventario2(){
+            $model_inventario = $this->getConexionModelClass();
+            $result_model = $model_inventario->obtenerInventario2();
+            return $result_model;
+        }
+
         function guardarProducto($data){
             $model_inventario = $this->getConexionModelClass();
             $result_model = $model_inventario->guardarProducto($data);

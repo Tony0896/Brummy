@@ -1,18 +1,18 @@
 <?php
-namespace inventario\inventarioModel;
+namespace promos\promosModel;
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
     use conexionDB\Code AS ClaseConexionDB;
     require_once ( __DIR__ . '/../../conexion/dataBase.php' );
-    class inventarioModel{ 
-
-        function obtenerInventario(){
+    class promosModel{
+        
+        function obtenerPromos(){
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $sql = "SELECT * FROM inventario WHERE estatus = 1";
+            $sql = "SELECT * FROM promos WHERE estatus = 1";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -37,56 +37,26 @@ namespace inventario\inventarioModel;
             return $resultJson;
         }
 
-        function obtenerInventario2(){
-            $db = new ClaseConexionDB\ConexionDB();
-            $conexion = $db->getConectaDB();
-
-            $sql = "SELECT i.*, p.porcentaje, p.fechaInicio ,p.fechaFin FROM inventario i LEFT JOIN promos p ON i.categoria = p.categoria WHERE i.estatus = 1 ORDER BY ID";
-            try{
-                $stmt = mysqli_query($conexion, $sql);
-                if($stmt){
-                    $rowcount=mysqli_num_rows($stmt);   
-                    if ( $rowcount ) {
-                        while($row = mysqli_fetch_assoc($stmt)) {
-                            $array[] =$row;
-                        }
-                        $result = array('success' => true, 'result' => $array);
-                    } else{
-                        $result = array('success' => true, 'result' => 'Sin Datos');
-                    }
-                } else {
-                    $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
-                }
-            } catch (mysqli_sql_exception $e) {
-                $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
-            }
-            
-            mysqli_close( $conexion );
-            $resultJson = json_encode( $result );
-            return $resultJson;
-        }
-
-        function guardarProducto($data){
+        function guardarPromo($data){
             // $request_body = file_get_contents('php://input');
             // $data = json_decode($request_body, true);
 
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $tipoProducto = $data['tipoProducto'];
-            $nombre = $data['nombre'];
-            $codigo = $data['codigo'];
-            $descripcion = $data['descripcion'];
-            $precioCompra = $data['precioCompra'];
-            $precioVenta = $data['precioVenta'];
-            $stockMinimo = $data['stockMinimo'];
-            $stockReal = $data['stockReal'];
+            $nombrePromo = $data['nombrePromo'];
             $categoria = $data['categoria'];
+            $fechaInicio = $data['fechaInicio'];
+            $fechaFin = $data['fechaFin'];
+            $porcentaje = $data['porcentaje'];
             $nameCategoria = $data['nameCategoria'];
+            $motivoMovimiento = 'Promos registrado';
+            $estatus = 1;
+            $FK_Usuario = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : 1;
+            $nameUsuario = isset($_SESSION['nombre']) ? $_SESSION['nombre'].' '.$_SESSION['apellidoPaterno'].' '.$_SESSION['apellidoMaterno'] : 'app';
 
-            $sql = "INSERT INTO inventario (codigo, nombre, descripcion, tipo, Flagtipo, precioCompra, precioVenta, stockMinimo, stockReal, fechaCreacion, categoria, nameCategoria)
-            VALUES ('$codigo', '$nombre', '$descripcion', '$tipoProducto', '$tipoProducto', '$precioCompra', '$precioVenta', '$stockMinimo', '$stockReal', current_timestamp(), $categoria, '$nameCategoria')";
-
+            $sql = "INSERT INTO promos (nombrePromo, categoria, fechaInicio, fechaFin, porcentaje, nameCategoria, motivoMovimiento, estatus, FKUsuarioCrea, FlagUsuarioCrea)
+            VALUES ('$nombrePromo', $categoria, '$fechaInicio', '$fechaFin', '$porcentaje', '$nameCategoria', '$motivoMovimiento', $estatus, $FK_Usuario, '$nameUsuario')";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -97,21 +67,18 @@ namespace inventario\inventarioModel;
             } catch (mysqli_sql_exception $e) {
                 $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
             }
-
+            
             mysqli_close( $conexion );
             $resultJson = json_encode( $result );
             return $resultJson;
         }
 
-        function obtenerProducto($data){
-            // $request_body = file_get_contents('php://input');
-            // $data = json_decode($request_body, true);
-
+        function obtenerPromo($data){
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
             $ID = $data['ID'];
-            $sql = "SELECT * FROM inventario WHERE ID = $ID";
+            $sql = "SELECT * FROM promos WHERE estatus = 1 AND ID = $ID";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -136,22 +103,25 @@ namespace inventario\inventarioModel;
             return $resultJson;
         }
 
-        function actualizaProducto($data){
+        function actualizaPromo($data){
             // $request_body = file_get_contents('php://input');
             // $data = json_decode($request_body, true);
 
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $descripcion = $data['descripcion'];
-            $precioCompra = $data['precioCompra'];
-            $precioVenta = $data['precioVenta'];
-            $stockMinimo = $data['stockMinimo'];
-            $stockReal = $data['stockReal'];
             $ID = $data['ID'];
+            $fechaInicio = $data['fechaInicio'];
+            $fechaFin = $data['fechaFin'];
+            $porcentaje = $data['porcentaje'];
+            $motivoMovimiento = 'Registrado actualizado';
+            $estatus = 1;
+            $FK_Usuario = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : 1;
+            $nameUsuario = isset($_SESSION['nombre']) ? $_SESSION['nombre'].' '.$_SESSION['apellidoPaterno'].' '.$_SESSION['apellidoMaterno'] : 'app';
 
-            $sql = "UPDATE inventario SET descripcion = '$descripcion', precioCompra = '$precioCompra', 
-            precioVenta = '$precioVenta', stockMinimo = '$stockMinimo', stockReal = '$stockReal' WHERE ID = $ID";
+            $sql = "UPDATE promos SET 
+                fechaInicio = '$fechaInicio', fechaFin = '$fechaFin', porcentaje = '$porcentaje', motivoMovimiento = '$motivoMovimiento', 
+                FKUsuarioCrea = $FK_Usuario, FlagUsuarioCrea = '$nameUsuario', fechaCreacion = current_timestamp() WHERE ID = $ID";
 
             try{
                 $stmt = mysqli_query($conexion, $sql);
@@ -163,22 +133,26 @@ namespace inventario\inventarioModel;
             } catch (mysqli_sql_exception $e) {
                 $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
             }
-
+            
             mysqli_close( $conexion );
             $resultJson = json_encode( $result );
             return $resultJson;
         }
-        
-        function eliminarProdcuto($data){
+
+        function eliminarPromo($data){
             // $request_body = file_get_contents('php://input');
             // $data = json_decode($request_body, true);
-            
+
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
             $ID = $data['ID'];
+            $motivoMovimiento = 'Registrado Eliminado';
+            $estatus = 1;
+            $FK_Usuario = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : 1;
+            $nameUsuario = isset($_SESSION['nombre']) ? $_SESSION['nombre'].' '.$_SESSION['apellidoPaterno'].' '.$_SESSION['apellidoMaterno'] : 'app';
 
-            $sql = "UPDATE inventario SET estatus = 0 WHERE ID = $ID";
+            $sql = "UPDATE promos SET  estatus = 0, motivoMovimiento = '$motivoMovimiento', FKUsuarioCrea = $FK_Usuario, FlagUsuarioCrea = '$nameUsuario', fechaCreacion = current_timestamp() WHERE ID = $ID";
 
             try{
                 $stmt = mysqli_query($conexion, $sql);
@@ -190,46 +164,10 @@ namespace inventario\inventarioModel;
             } catch (mysqli_sql_exception $e) {
                 $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
             }
-
-            mysqli_close( $conexion );
-            $resultJson = json_encode( $result );
-            return $resultJson;
-        }
-
-        function generarReporteInventario($data){
-            // $request_body = file_get_contents('php://input');
-            // $data = json_decode($request_body, true);
-            
-            $db = new ClaseConexionDB\ConexionDB();
-            $conexion = $db->getConectaDB();
-
-            $fechaReporteInicio = $data['fechaReporteInicio'];
-            $fechaReporteFin = $data['fechaReporteFin'];
-
-            $sql = "SELECT SUM(cantidad) as suma, FlagProducto, FKProducto FROM ventadetalle WHERE DATE(fechaCreacion) BETWEEN '$fechaReporteInicio' AND '$fechaReporteFin' GROUP BY FKProducto ORDER BY suma DESC;";
-            try{
-                $stmt = mysqli_query($conexion, $sql);
-                if($stmt){
-                    $rowcount=mysqli_num_rows($stmt);   
-                    if ( $rowcount ) {
-                        while($row = mysqli_fetch_assoc($stmt)) {
-                            $array[] =$row;
-                        }
-                        $result = array('success' => true, 'result' => $array);
-                    } else{
-                        $result = array('success' => true, 'result' => 'Sin Datos');
-                    }
-                } else {
-                    $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
-                }
-            } catch (mysqli_sql_exception $e) {
-                $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
-            }
             
             mysqli_close( $conexion );
             $resultJson = json_encode( $result );
             return $resultJson;
         }
-        
     }
 ?>
