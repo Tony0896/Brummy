@@ -165,13 +165,41 @@ if( !$boolean_session ){
                                         </div>
 
                                         <div class="row dahsboardContenido" style="display: none">
-                                            <div class="col-md-6 grid-margin stretch-card">
+                                            <div class="col-md-12 grid-margin stretch-card">
                                                 <div class="card2 mb-2">
-                                                    <div class="card-body">
-                                                        <h4 class="statistics-title">Próximas Citas (5)</h4>
+                                                    <div class="card-body" style="min-height: 390px;">
+                                                        <h4 class="statistics-title" style="margin-bottom: 18px;">Mascotas en Resguardo</h4>
                                                         <div id="div_citas">
                                                             <table
-                                                                class="mdl-data-table table responsive table-bordered table-striped dashTable"
+                                                                class="mdl-data-table table responsive table-bordered table-striped dashTable datableDash"
+                                                                style="width: 100%"
+                                                            >
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>#</th>
+                                                                        <th>Mascota</th>
+                                                                        <th>Estatus</th>
+                                                                        <th>Tiempo de Cita</th>
+                                                                        <th>Tiempo después de Cita</th>
+                                                                        <th></th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="bodyResguardoMascotasDashbora"></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row dahsboardContenido" style="display: none">
+                                            <div class="col-md-6 grid-margin stretch-card">
+                                                <div class="card2 mb-2">
+                                                    <div class="card-body" style="min-height: 390px;">
+                                                        <h4 class="statistics-title" style="margin-bottom: 18px;">Próximas Citas (5)</h4>
+                                                        <div id="div_citas">
+                                                            <table
+                                                                class="mdl-data-table table responsive table-bordered table-striped dashTable datableDash"
                                                                 style="width: 100%"
                                                             >
                                                                 <thead>
@@ -189,11 +217,11 @@ if( !$boolean_session ){
                                             </div>
                                             <div class="col-md-6 grid-margin stretch-card">
                                                 <div class="card2 mb-2">
-                                                    <div class="card-body">
-                                                        <h4 class="statistics-title">Últimas ventas (5)</h4>
+                                                    <div class="card-body" style="min-height: 390px;">
+                                                        <h4 class="statistics-title" style="margin-bottom: 18px;">Últimas ventas (5)</h4>
                                                         <div id="div_citas">
                                                             <table
-                                                                class="mdl-data-table table responsive table-bordered table-striped dashTable"
+                                                                class="mdl-data-table table responsive table-bordered table-striped dashTable datableDash"
                                                                 style="width: 100%"
                                                             >
                                                                 <thead>
@@ -204,6 +232,55 @@ if( !$boolean_session ){
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="bodyVentasDashbora"></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row dahsboardContenido" style="display: none">
+                                            <div class="col-md-6 grid-margin stretch-card">
+                                                <div class="card2 mb-2">
+                                                    <div class="card-body" style="min-height: 390px;">
+                                                        <h4 class="statistics-title" style="margin-bottom: 18px;">Citas por Confirmar</h4>
+                                                        <div id="div_citas">
+                                                            <table
+                                                                class="mdl-data-table table responsive table-bordered table-striped dashTable datableDash"
+                                                                style="width: 100%"
+                                                            >
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Cliente</th>
+                                                                        <th>Mascota</th>
+                                                                        <th>Fecha Propuesta</th>
+                                                                        <th>&nbsp;</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="bodyCitasConfirmarDashbora"></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 grid-margin stretch-card">
+                                                <div class="card2 mb-2">
+                                                    <div class="card-body" style="min-height: 390px;">
+                                                        <h4 class="statistics-title" style="margin-bottom: 18px;">Productos por terminar</h4>
+                                                        <div id="div_citas">
+                                                            <table
+                                                                class="mdl-data-table table responsive table-bordered table-striped dashTable datableDash"
+                                                                style="width: 100%"
+                                                            >
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>#</th>
+                                                                        <th>Codigo</th>
+                                                                        <th>Nombre</th>
+                                                                        <th>Stock Real</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="bodyProductosTerminar"></tbody>
                                                             </table>
                                                         </div>
                                                     </div>
@@ -237,32 +314,6 @@ if( !$boolean_session ){
                                                         <h4 class="statistics-title">Satisfacción cliente</h4>
                                                         <div id="div_citas">
                                                             <canvas id="bar-chart" width="470" height="255"></canvas>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row dahsboardContenido" style="display: none">
-                                            <div class="col-md-12 grid-margin stretch-card">
-                                                <div class="card2 mb-2">
-                                                    <div class="card-body">
-                                                        <h4 class="statistics-title">Citas por Confirmar</h4>
-                                                        <div id="div_citas">
-                                                            <table
-                                                                class="mdl-data-table table responsive table-bordered table-striped dashTable"
-                                                                style="width: 100%"
-                                                            >
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Cliente</th>
-                                                                        <th>Mascota</th>
-                                                                        <th>Fecha Propuesta</th>
-                                                                        <th>&nbsp;</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody id="bodyCitasConfirmarDashbora"></tbody>
-                                                            </table>
                                                         </div>
                                                     </div>
                                                 </div>

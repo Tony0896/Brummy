@@ -357,6 +357,71 @@ namespace login\loginModel;
             $resultJson = json_encode( $result );
             return $resultJson;
         }
-        	
+
+        function getProductosAgotar(){
+            // $request_body = file_get_contents('php://input');
+            // $data = json_decode($request_body, true);
+            
+            $db = new ClaseConexionDB\ConexionDB();
+            $conexion = $db->getConectaDB();
+
+            $sql = "SELECT (stockReal - stockMinimo) as resta, codigo, nombre,	descripcion, stockMinimo, stockReal FROM inventario WHERE tipo = 'Producto' AND estatus = 1 ORDER BY resta;";
+            
+            try{
+                $stmt = mysqli_query($conexion, $sql);
+                if($stmt){
+                    $rowcount=mysqli_num_rows($stmt);   
+                    if ( $rowcount ) {
+                        while($row = mysqli_fetch_assoc($stmt)) {
+                            $array[] =$row;
+                        }
+                        $result = array('success' => true, 'result' => $array);
+                    } else{
+                        $result = array('success' => true, 'result' => 'Sin Datos');
+                    }
+                } else {
+                    $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
+                }
+            } catch (mysqli_sql_exception $e) {
+                $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
+            }
+            
+            mysqli_close( $conexion );
+            $resultJson = json_encode( $result );
+            return $resultJson;
+        }
+
+        function cargarMascotasResguardo(){
+            // $request_body = file_get_contents('php://input');
+            // $data = json_decode($request_body, true);
+            
+            $db = new ClaseConexionDB\ConexionDB();
+            $conexion = $db->getConectaDB();
+
+            $sql = "SELECT ID, FK_mascota,nombre, FKCita, fechaEntrada, fechaFinCita,fechaSalida,estatus,nameEstatus, getDiferenciaTiempo(fechaEntrada, fechaFinCita) tiempoEnCita, getDiferenciaTiempo(fechaFinCita, fechaSalida) as tiempoEnResguardo FROM mascotas_resguardo WHERE estatus <> 3;";
+            
+            try{
+                $stmt = mysqli_query($conexion, $sql);
+                if($stmt){
+                    $rowcount=mysqli_num_rows($stmt);   
+                    if ( $rowcount ) {
+                        while($row = mysqli_fetch_assoc($stmt)) {
+                            $array[] =$row;
+                        }
+                        $result = array('success' => true, 'result' => $array);
+                    } else{
+                        $result = array('success' => true, 'result' => 'Sin Datos');
+                    }
+                } else {
+                    $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
+                }
+            } catch (mysqli_sql_exception $e) {
+                $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
+            }
+            
+            mysqli_close( $conexion );
+            $resultJson = json_encode( $result );
+            return $resultJson;
+        }
     }
 ?>

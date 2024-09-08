@@ -66,5 +66,17 @@
             $result_model = $model_citas->getCitasPorConfirmarMes($data);
             return $result_model;
         }
+
+        function getProductosAgotar(){
+            $model_citas = $this->getConexionModelClass();
+            $result_model = $model_citas->getProductosAgotar();
+            return $result_model;
+        }
+
+        function cargarMascotasResguardo(){
+            $model_citas = $this->getConexionModelClass();
+            $result_model = $model_citas->cargarMascotasResguardo();
+            return $result_model;
+        }
     }
 ?>

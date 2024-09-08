@@ -431,6 +431,7 @@ function obtenerMotivos() {
                             html += `<tr>
                                 <td>${index + 1}</td>
                                 <td class="capitalize">${data.motivoCita}</td>
+                                <td class="capitalize">${data.tiempoEstimado}</td>
                                 <td>
                                     <div style="display: flex; flex-direction: row;">
                                         <div class="buttom-red buttom button-sinText mx-1" title="Eliminar" onclick="deleteMotivoCita(${data.ID})">
@@ -466,6 +467,42 @@ function crearNuevoMotivo() {
                 <label name="Motivo" for="motivo" class="text">Motivo</label>
                 <input name="Motivo" type="text" class="capitalize obligatorio input" id="motivo" autocomplete="off" maxlength"50"/>
             </div>
+            <br>
+            <span class="text">Tiempo estimado: </span>
+            <div class="coolinput">
+                <label name="Horas" for="horas" class="text">Horas</label>
+                <select name="Horas" class="capitalize input" id="horasMotivos">
+                    <option value="0">00</option>
+                    <option value="1">01</option>
+                    <option value="2">02</option>
+                    <option value="3">03</option>
+                    <option value="4">04</option>
+                    <option value="5">05</option>
+                    <option value="6">06</option>
+                    <option value="7">07</option>
+                    <option value="8">08</option>
+                    <option value="9">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+                
+                <label name="Minutos" for="minutos" class="text">Minutos</label>
+                <select name="Minutos" class="capitalize input" id="minutosMotivos">
+                    <option value="0">00</option>
+                    <option value="5" selected>05</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="35">35</option>
+                    <option value="40">40</option>
+                    <option value="45">45</option>
+                    <option value="50">50</option>
+                    <option value="55">55</option>
+                </select>
+            </div>
         </div>
 
         <div class="center-fitcomponent" style="width: 100%;">
@@ -496,7 +533,14 @@ function guardarMotivoCita() {
     let response = values.response;
     let valido = values.valido;
     if (valido) {
+        if ($("#horasMotivos").val() == 0 && $("#minutosMotivos").val() == 0) {
+            msj.show("Aviso", "Debes indicar el tiempo estimado del motivo.", [{ text1: "OK" }]);
+            return false;
+        }
+
         let motivoCita = String($("#motivo").val()).trim();
+        let tiempoEstimado =
+            String($("#horasMotivos").find("option:selected").text()) + ":" + String($("#minutosMotivos").find("option:selected").text());
 
         motivoCita.replaceAll("'", '"');
 
@@ -506,7 +550,7 @@ function guardarMotivoCita() {
             method: "POST",
             dataType: "JSON",
             url: "./views/catalogos/guardarMotivoCita.php",
-            data: { motivoCita },
+            data: { motivoCita, tiempoEstimado },
         })
             .done(function (results) {
                 let success = results.success;

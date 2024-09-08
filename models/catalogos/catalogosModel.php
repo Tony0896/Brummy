@@ -212,8 +212,9 @@ namespace catalogos\catalogosModel;
             $conexion = $db->getConectaDB();
 
             $motivoCita = $data['motivoCita'];
+            $tiempoEstimado = $data['tiempoEstimado'];
 
-            $sql = "INSERT INTO motivoscitas (motivoCita) VALUES ('$motivoCita')";
+            $sql = "INSERT INTO motivoscitas (motivoCita, tiempoEstimado) VALUES ('$motivoCita', '$tiempoEstimado')";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){

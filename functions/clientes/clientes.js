@@ -37,6 +37,7 @@ function obtenerClientes() {
                             }
                             html += `<tr>
                                 <td>${index + 1}</td>
+                                <td>BRUHPSCTE${data.ID}</td>
                                 <td> <span class="material-icons" style="font-size: 18px;color: ${temperamento}"> fiber_manual_record </span> </td>
                                 <td class="capitalize">${data.nombre} ${data.apellidoP} ${data.apellidoM}</td>
                                 <td ${data.telefono ? "" : 'style="text-align: center;"'}>${data.telefono ? data.telefono : tdSinData}</td>
@@ -464,9 +465,8 @@ function HistorialCliente(ID) {
                                     <div class="timestamp">${volteaFecha(data.fecha, 1)} </div>
                                     <div class="item-title">${data.motivo_movimiento}</div>
                                     <div class="item-title">
-                                        <div class="buttom-blue buttom button-sinText mx-1" title="Ver Detalle" onclick="verDetalleVentaCliente(${
-                                            data.FK_registro_accion
-                                        })">
+                                        <div class="buttom-blue buttom button-sinText mx-1" title="Ver Detalle" 
+                                        onclick="verDetalleVentaCliente(${data.FK_registro_accion}, ${data.cambioVenta})">
                                             <span class="text-sm mb-0"><i class="material-icons"> visibility </i></span>
                                         </div>
                                     </div>
@@ -519,14 +519,14 @@ function HistorialCliente(ID) {
         });
 }
 
-function verDetalleVentaCliente(ID) {
+function verDetalleVentaCliente(ID, cambioVenta) {
     preloader.show();
 
     $.ajax({
         method: "POST",
         dataType: "JSON",
         url: "./views/ventas/obtenerVenta.php",
-        data: { ID },
+        data: { ID, cambioVenta },
     })
         .done(function (results) {
             let success = results.success;

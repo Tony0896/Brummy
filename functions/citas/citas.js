@@ -553,7 +553,7 @@ function recargaEventosDay(oldFecha) {
                             indicadorCliente = "";
                         result.forEach((data, index) => {
                             TextEstatus = "";
-                            if (data.estatus == 1) {
+                            if (data.estatus == 1 || data.estatus == 5) {
                                 TextEstatus = `<h4 class="card-title text-success" style="margin: 0px;"><strong>${data.flagEstatus}</strong></h4>`;
                                 colorText = "#009071";
                             } else if (data.estatus == 2) {
@@ -614,12 +614,13 @@ function recargaEventosDay(oldFecha) {
                                                         data.motivoCita
                                                     ).trim()} </strong> </div> 
                                                     <div class="my-0" style="display: flex;"> 
-                                                        <div class="buttom-blue buttom" onclick="marcarCita(${data.ID})" style="margin-right: 10px;">
+                                                        <div class="buttom-blue buttom" 
+                                                onclick="marcarCita(${data.ID}, ${data.estatus}, ${data.FKnombreMascota}, '${data.nombreMascota}')" 
+                                                            style="margin-right: 10px;">
                                                             <span class="text-sm mb-0"> <i class="material-icons" style="margin-left: 0;"> date_range </i></span>
                                                         </div>
-                                                        <div class="buttom-green buttom" onclick="generarLinkEncuesta(${
-                                                            data.ID
-                                                        })" style="margin-right: 10px;">
+                                                        <div class="buttom-green buttom" 
+                                                        onclick="generarLinkEncuesta(${data.ID}, ${data.estatus})" style="margin-right: 10px;">
                                                             <span class="text-sm mb-0"> <i class="material-icons" style="margin-left: 0;"> link </i></span>
                                                         </div>
                                                     </div>
@@ -695,18 +696,59 @@ function cargaEventosMes(fecha) {
         });
 }
 
-function marcarCita(ID) {
+function marcarCita(ID, estatus, FK_mascota, nombreMascota) {
+    if (estatus == 2) {
+        msj.show("Aviso", "Esta cita ya esta marcada como atendida.", [{ text1: "OK" }]);
+        return false;
+    }
+
     $("#labelModal").html(`Marcar Cita`);
 
     $("#body_modal").html(`<br>
         <div id="formEspecies">
             <div class="coolinput">
                 <label for="newEstatusCita" class="text">La cita fue:</label>
-                <select class="input capitalize" id="newEstatusCita" style="background-color: rgb(255, 255, 255);width:100%;">
-                    <option value="2">ATENDIDA</option>
-                    <option value="3">CANCELADA</option>
-                    <option value="4">REAGENDADA</option>
+                <select class="input capitalize" id="newEstatusCita" style="background-color: rgb(255, 255, 255);width:100%;" onchange="cambioEstatusCita()">
+                ${
+                    estatus == 5
+                        ? `<option value="2">ATENDIDA</option>`
+                        : estatus == 3
+                        ? `
+                        <option value="3">CANCELADA</option>
+                        <option value="4">REAGENDADA</option>`
+                        : `<option value="5">EN PROCESO</option>
+                        <option value="2">ATENDIDA</option>
+                        <option value="3">CANCELADA</option>
+                        <option value="4">REAGENDADA</option>`
+                }
+                    
                 </select>
+            </div>
+
+            <div id="div_newDataCita" style="display: none;">
+                <div class="coolinput">
+                    <label for="fechaCita" class="text">Fecha:</label>
+                    <input name="Fecha" type="text" class="input obligatorio" id="newFechaCita" autocomplete="off" />
+                </div>
+
+                <div class="coolinput">
+                    <label for="horaCita" class="text">Hora:</label>
+                    <input type="text" name="Hora" class="input obligatorio" id="newHoraCita" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div id="div_ingresoMascota" style="display: none;">
+                <div class="checkbox-wrapper-46" style="margin: 22px 0px 12px 8px;">
+                    <input type="checkbox" id="cbx-48" class="inp-cbx" checked/>
+                    <label for="cbx-48" class="cbx">
+                        <span style="transform: scale(1.3);">
+                            <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                            </svg>
+                        </span>
+                        <span>¿Ingresar a ${nombreMascota}, para contar el tiempo?</span>
+                    </label>
+                </div>
             </div>
 
             <div class="coolinput">
@@ -716,7 +758,7 @@ function marcarCita(ID) {
         </div>
 
         <div class="center-fitcomponent" style="width: 100%;">
-            <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" onclick="guardarEstausCita(${ID});">
+            <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" onclick="guardarEstausCita(${ID}, ${FK_mascota});">
                 <span class="text-sm mb-0 span-buttom"> 
                     Guardar
                     <i class="material-icons"> save </i>
@@ -729,6 +771,16 @@ function marcarCita(ID) {
         backdrop: "static",
         keyboard: false,
     });
+
+    $("#newHoraCita").mdtimepicker({
+        timeFormat: "hh:mm:ss", // format of the time value (data-time attribute)
+        format: "hh:mm", // format of the input value
+        theme: "blue", // theme of the timepicker
+        clearBtn: true, // determines if clear button is visible
+        is24hour: true, // determines if the clock will use 24-hour format in the UI; format config will be forced to `hh:mm` if not specified
+    });
+
+    $("#newFechaCita").duDatepicker({ format: "dd-mm-yyyy", clearBtn: true, cancelBtn: true });
 
     $("#modalTemplate").modal("show");
 
@@ -744,6 +796,25 @@ function guardarEstausCita(ID) {
     let comentariosAdicionales = String($("#comentariosAdicionales").val()).trim();
     let FK_mascota = $("#input_FK_mascota_" + ID).val();
     let nombre = $("#input_nombre_" + ID).val();
+    let ingresarMascota = 0;
+    if (estatus == 5) {
+        ingresarMascota = 1;
+    }
+
+    if ($("#newEstatusCita").val() == 4) {
+        if (!$("#newFechaCita").val()) {
+            msj.show("Aviso", "Falta indicar la fecha de la cita", [{ text1: "OK" }]);
+            return false;
+        }
+        if (!$("#newHoraCita").val()) {
+            msj.show("Aviso", "Falta indicar la hora de la cita", [{ text1: "OK" }]);
+            return false;
+        }
+        flagEstatus = "PENDIENTE";
+    }
+
+    let newFechaCita = volteaFecha($("#newFechaCita").val(), 2);
+    let newHoraCita = $("#newHoraCita").val();
 
     $.ajax({
         method: "POST",
@@ -756,6 +827,9 @@ function guardarEstausCita(ID) {
             ID,
             FK_mascota,
             nombre,
+            newFechaCita,
+            newHoraCita,
+            ingresarMascota,
         },
     })
         .done(function (results) {
@@ -1031,41 +1105,45 @@ function cargaBolitasCalendar() {
     });
 }
 
-function generarLinkEncuesta(ID) {
-    preloader.show();
-    $.ajax({
-        method: "POST",
-        dataType: "JSON",
-        url: "./views/citas/generarLinkEncuesta.php",
-        data: {
-            ID,
-        },
-    })
-        .done(function (results) {
-            let success = results.success;
-            let result = results.result;
-            switch (success) {
-                case true:
-                    preloader.hide();
-                    let data = window.btoa(`data#-${ID}`);
-                    let url = getCurrentURL() + "/Brummy/pages/encuesta/index.php?data=" + data;
-                    $(`#foo_${ID}`).val(url);
-                    setTimeout(function () {
-                        $(`#btn_foo_${ID}`).trigger("click");
-                        msj.show("Aviso", "URL Copiada correctamente", [{ text1: "OK" }]);
-                    }, 1500);
-                    break;
-                case false:
-                    preloader.hide();
-                    msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
-                    break;
-            }
+function generarLinkEncuesta(ID, estatus) {
+    if (estatus == 2) {
+        preloader.show();
+        $.ajax({
+            method: "POST",
+            dataType: "JSON",
+            url: "./views/citas/generarLinkEncuesta.php",
+            data: {
+                ID,
+            },
         })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            preloader.hide();
-            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
-            console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
-        });
+            .done(function (results) {
+                let success = results.success;
+                let result = results.result;
+                switch (success) {
+                    case true:
+                        preloader.hide();
+                        let data = window.btoa(`data#-${ID}`);
+                        let url = getCurrentURL() + "/Brummy/pages/encuesta/index.php?data=" + data;
+                        $(`#foo_${ID}`).val(url);
+                        setTimeout(function () {
+                            $(`#btn_foo_${ID}`).trigger("click");
+                            msj.show("Aviso", "Link de encuesta generada correctamente.", [{ text1: "OK" }]);
+                        }, 1500);
+                        break;
+                    case false:
+                        preloader.hide();
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                        break;
+                }
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                preloader.hide();
+                msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+            });
+    } else {
+        msj.show("Aviso", "Hasta que la cita este marcado como atendida se podrá generar el link de encuesta.", [{ text1: "OK" }]);
+    }
 }
 
 function muestraDomicilio() {
@@ -1129,4 +1207,18 @@ function getDireecionCliente(FK_dueno) {
             msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
             console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
         });
+}
+
+function cambioEstatusCita() {
+    let valor = $("#newEstatusCita").val();
+    if (valor == 4) {
+        $("#div_newDataCita").css("display", "block");
+        // $("#div_ingresoMascota").css("display", "none");
+    } else if (valor == 5) {
+        // $("#div_ingresoMascota").css("display", "block");
+        $("#div_newDataCita").css("display", "none");
+    } else {
+        $("#div_newDataCita").css("display", "none");
+        // $("#div_ingresoMascota").css("display", "none");
+    }
 }

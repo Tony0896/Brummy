@@ -70,6 +70,7 @@
 }
 
 $(document).ready(() => {
+    preloader.show();
     $.ajax({
         method: "POST",
         dataType: "json",
@@ -84,10 +85,13 @@ $(document).ready(() => {
                     results.forEach((data, index) => {
                         if (data.ID_modulo == 1) {
                             $(".dahsboardContenido").css("display", "flex");
-                            cargaDataDash();
+                            cargarMascotasResguardo();
+                        } else {
+                            preloader.hide();
                         }
 
                         if (data.ID_modulo != 1 && data.ID_modulo != 2) {
+                            preloader.hide();
                             $("#navSide").append(`
                                 <li class="nav-item nav_item2" id="${data.id_element}_li">
                                     <a class="nav-link tagAMenu" href="#" id="${data.id_element}" onclick="cargaTemplate(this.id, '${data.permiso}')">
@@ -132,6 +136,62 @@ $(document).ready(() => {
             console.log("accesoUsuarioView  - Server: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
         });
 });
+
+function cargarMascotasResguardo() {
+    $.ajax({
+        method: "POST",
+        dataType: "json",
+        url: "views/login/cargarMascotasResguardo.php",
+        data: {},
+    })
+        .done(function (result) {
+            let success = result.success;
+            let results = result.result;
+            let html = "";
+            switch (success) {
+                case true:
+                    if (results == "Sin Datos") {
+                        $("#bodyResguardoMascotasDashbora").html(html);
+                    } else {
+                        let btn = "";
+                        results.forEach((data, index) => {
+                            if (data.estatus == 2) {
+                                btn = `<div class="buttom-blue buttom" 
+                                onclick="liberarMascota(${data.ID}, ${data.estatus})" style="margin-right: 10px;">
+                                    <span class="text-sm mb-0"> <i class="material-icons" style="margin-left: 0;"> door_back </i></span>
+                                </div>`;
+                            } else {
+                                btn = "";
+                            }
+                            html += `
+                                <tr>
+                                    <td>${Number(index + 1)}</td>
+                                    <td>${data.nombre}</td>
+                                    <td>${data.nameEstatus}</td>
+                                    <td>${data.tiempoEnCita}</td>
+                                    <td>${data.tiempoEnResguardo}</td>
+                                    <td>${btn}</td>
+                                </tr>
+                            `;
+                        });
+                        $("#bodyResguardoMascotasDashbora").html(html);
+                    }
+                    cargaDataDash();
+                    break;
+                case false:
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Aviso",
+                        text: "Algo salió mal.",
+                    });
+
+                    break;
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            console.log("accesoUsuarioView  - Server: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+        });
+}
 
 function cargaDataDash() {
     cargaDataMarquee();
@@ -342,6 +402,56 @@ function cargaDataDash() {
     });
 
     getCitasPorConfirmar();
+    getProductosAgotar();
+}
+
+function getProductosAgotar() {
+    $.ajax({
+        method: "POST",
+        dataType: "json",
+        url: "views/login/getProductosAgotar.php",
+        data: {},
+    })
+        .done(function (result) {
+            let success = result.success;
+            let results = result.result;
+            let html = "";
+            switch (success) {
+                case true:
+                    if (results == "Sin Datos") {
+                        dataTableDestroyClass("datableDash");
+                        $("#bodyProductosTerminar").html(html);
+                        dataTableCreateClass("datableDash");
+                    } else {
+                        results.forEach((data, index) => {
+                            html += `
+                                <tr>
+                                    <td>${Number(index + 1)}</td>
+                                    <td>${data.codigo}</td>
+                                    <td>${data.nombre} <br> ${data.descripcion}</td>
+                                    <td>${data.stockReal}</td>
+                                </tr>
+                            `;
+                        });
+                        dataTableDestroyClass("datableDash");
+                        $("#bodyProductosTerminar").html(html);
+                        dataTableCreateClass("datableDash");
+                    }
+                    preloader.hide();
+                    break;
+                case false:
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Aviso",
+                        text: "Algo salió mal.",
+                    });
+
+                    break;
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            console.log("accesoUsuarioView  - Server: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+        });
 }
 
 function cargaDataMarquee() {
@@ -1258,6 +1368,7 @@ function getCitasPorConfirmar() {
             switch (success) {
                 case true:
                     if (results == "Sin Datos") {
+                        dataTableDestroyClass("datableDash");
                         $("#bodyCitasConfirmarDashbora").html(html);
                         getCitasPorConfirmarMes();
                     } else {
@@ -1287,6 +1398,7 @@ function getCitasPorConfirmar() {
                                 </tr>
                             `;
                         });
+                        dataTableDestroyClass("datableDash");
                         $("#bodyCitasConfirmarDashbora").html(html);
                         getCitasPorConfirmarMes();
                     }
@@ -1324,6 +1436,8 @@ function getCitasPorConfirmarMes() {
                 case true:
                     if (results == "Sin Datos") {
                         // $("#bodyCitasConfirmarDashbora").html(html);
+                        dataTableDestroyClass("datableDash");
+                        dataTableCreateClass("datableDash");
                     } else {
                         results.forEach((data, index) => {
                             let fecha = data.fechaRecurrenca;
@@ -1406,7 +1520,9 @@ function validaFechasConfirmar(fecha, nombreCliente, nombreMascota, ID_mov, fech
                     </td>
                 </tr>
             `;
+            dataTableDestroyClass("datableDash");
             $("#bodyCitasConfirmarDashbora").append(html);
+            dataTableCreateClass("datableDash");
         } else {
             // console.log("no mostrar");
         }
@@ -1434,4 +1550,107 @@ function validaFechasConfirmar(fecha, nombreCliente, nombreMascota, ID_mov, fech
             validaFechasConfirmar(end, nombreCliente, nombreMascota, ID_mov, fechaRecurrenca, tipoRecurrencia, ID);
         }
     }
+}
+
+function liberarMascota(ID) {
+    Swal.fire({
+        title: "",
+        text: "¿Estás seguro de quererle dar salida a esta mascota?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#7066e0",
+        cancelButtonColor: "#FF0037",
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancelar",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            preloader.show();
+            $.ajax({
+                method: "POST",
+                dataType: "JSON",
+                url: "./views/citas/liberarMascota.php",
+                data: {
+                    ID,
+                },
+            })
+                .done(function (results) {
+                    let success = results.success;
+                    let result = results.result;
+                    switch (success) {
+                        case true:
+                            $.ajax({
+                                method: "POST",
+                                dataType: "json",
+                                url: "views/login/cargarMascotasResguardo.php",
+                                data: {},
+                            })
+                                .done(function (result) {
+                                    let success = result.success;
+                                    let results = result.result;
+                                    let html = "";
+                                    switch (success) {
+                                        case true:
+                                            if (results == "Sin Datos") {
+                                                dataTableDestroyClass("datableDash");
+                                                $("#bodyResguardoMascotasDashbora").html(html);
+                                                dataTableCreateClass("datableDash");
+                                            } else {
+                                                let btn = "";
+                                                results.forEach((data, index) => {
+                                                    if (data.estatus == 2) {
+                                                        btn = `<div class="buttom-blue buttom" 
+                                                        onclick="liberarMascota(${data.ID}, ${data.estatus})" style="margin-right: 10px;">
+                                                            <span class="text-sm mb-0"> <i class="material-icons" style="margin-left: 0;"> door_back </i></span>
+                                                        </div>`;
+                                                    } else {
+                                                        btn = "";
+                                                    }
+                                                    html += `
+                                                        <tr>
+                                                            <td>${Number(index + 1)}</td>
+                                                            <td>${data.nombre}</td>
+                                                            <td>${data.nameEstatus}</td>
+                                                            <td>${data.tiempoEnCita}</td>
+                                                            <td>${data.tiempoEnResguardo}</td>
+                                                            <td>${btn}</td>
+                                                        </tr>
+                                                    `;
+                                                });
+                                                dataTableDestroyClass("datableDash");
+                                                $("#bodyResguardoMascotasDashbora").html(html);
+                                                dataTableCreateClass("datableDash");
+                                            }
+                                            preloader.hide();
+                                            break;
+                                        case false:
+                                            Swal.fire({
+                                                icon: "warning",
+                                                title: "Aviso",
+                                                text: "Algo salió mal.",
+                                            });
+                                            preloader.hide();
+                                            break;
+                                    }
+                                })
+                                .fail(function (jqXHR, textStatus, errorThrown) {
+                                    preloader.hide();
+                                    console.log(
+                                        "accesoUsuarioView  - Server: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown
+                                    );
+                                });
+
+                            break;
+                        case false:
+                            preloader.hide();
+                            // msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                            break;
+                    }
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    preloader.hide();
+                    // msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+                });
+        }
+    });
 }

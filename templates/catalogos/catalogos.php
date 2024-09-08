@@ -90,6 +90,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Motivo</th>
+                                    <th>Tiempo <br> Estimado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>

@@ -390,3 +390,40 @@ function getDateActual() {
     let fecha_actual_format = `${year}-${month}-${day}`;
     return fecha_actual_format;
 }
+
+function dataTableCreateClass(classname) {
+    $("." + classname)
+        .DataTable({
+            responsive: true,
+            searching: false,
+            bFilter: false,
+            bLengthChange: false,
+            info: false,
+            pageLength: 5,
+            language: {
+                lengthMenu: "_MENU_ registros por pagina",
+                zeroRecords: "No hay resultados",
+                info: "Pagina _PAGE_ de _PAGES_",
+                infoEmpty: "No hay registros disponibles",
+                infoFiltered: "(Mostrar _MAX_ registros)",
+                paginate: {
+                    previous: "‹",
+                    next: "›",
+                },
+                aria: {
+                    paginate: {
+                        previous: "Previous",
+                        next: "Next",
+                    },
+                },
+            },
+            order: [[0, "asc"]],
+        })
+        .draw();
+}
+
+function dataTableDestroyClass(classname) {
+    $("." + classname)
+        .DataTable()
+        .destroy();
+}

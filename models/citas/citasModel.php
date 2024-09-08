@@ -90,6 +90,29 @@ namespace citas\citasModel;
             mysqli_close( $conexion );
         }
 
+        function InsertMascotaVete($FK_mascota, $nombre, $FK_Usuario, $nameUsuario, $estatus, $nameEstatus, $ID){
+            $db = new ClaseConexionDB\ConexionDB();
+            $conexion = $db->getConectaDB();
+
+            if($estatus == 1){
+                $sql = "INSERT INTO mascotas_resguardo (FK_mascota, nombre, FK_Usuario, nameUsuario, estatus, nameEstatus, FKCita, fechaEntrada, fechaFinCita, fechaSalida) 
+                VALUES ($FK_mascota, '$nombre', $FK_Usuario, '$nameUsuario', $estatus, 'EN CITA', $ID, CURRENT_TIMESTAMP(), null, null)";
+            } else if($estatus == 2){
+                $sql = "UPDATE mascotas_resguardo SET fechaFinCita = CURRENT_TIMESTAMP(), estatus =  2, nameEstatus = 'EN RESGUARDO', FK_UsuarioCita = '$FK_Usuario', nameUsuarioCita = '$nameUsuario' WHERE FKCita = '$ID'";
+            } else if($estatus == 3){
+                $sql = "UPDATE mascotas_resguardo SET fechaSalida = CURRENT_TIMESTAMP(), estatus =  3, nameEstatus = 'SALIDA', FK_UsuarioSalida = '$FK_Usuario', nameUsuarioSalida = '$nameUsuario' WHERE ID = '$ID'";
+            }
+            
+            try{
+                $stmt = mysqli_query($conexion, $sql);
+                if($stmt){
+
+                }
+            } catch (mysqli_sql_exception $e) { }
+
+            mysqli_close( $conexion );
+        }
+
         function obtenerEventosMes($data){
             // $request_body = file_get_contents('php://input');
             // $data = json_decode($request_body, true);
@@ -246,11 +269,28 @@ namespace citas\citasModel;
             $estatus = $data['estatus'];
             $comentariosCita2 = $data['comentariosAdicionales'];
             $ID = $data['ID'];
+            $ingresarMascota = $data['ingresarMascota'];
 
             $FK_mascota = $data['FK_mascota'];
             $nombre = $data['nombre'];
 
-            $sql = "UPDATE citas SET flagEstatus = '$flagEstatus', estatus = '$estatus', comentariosCita2 = '$comentariosCita2' WHERE ID = $ID";
+            if($estatus == 4){
+                $newFechaCita = $data['newFechaCita'];
+                $newHoraCita = $data['newHoraCita'];
+                $sql = "UPDATE citas SET flagEstatus = 'PENDIENTE', estatus = '$estatus', comentariosCita2 = '$comentariosCita2', fechaCita = '$newFechaCita', horaCita = '$newHoraCita' WHERE ID = $ID";
+            } else {
+                $sql = "UPDATE citas SET flagEstatus = '$flagEstatus', estatus = '$estatus', comentariosCita2 = '$comentariosCita2' WHERE ID = $ID";
+                if($estatus == 5 AND $ingresarMascota == 1){
+                    $FK_Usuario = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : 1;
+                    $nameUsuario = isset($_SESSION['nombre']) ? $_SESSION['nombre'].' '.$_SESSION['apellidoPaterno'].' '.$_SESSION['apellidoMaterno'] : 'app';
+                    $this->InsertMascotaVete($FK_mascota, $nombre, $FK_Usuario, $nameUsuario, 1, 'EN CITA', $ID);
+                } else if($estatus == 2){
+                    $FK_Usuario = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : 1;
+                    $nameUsuario = isset($_SESSION['nombre']) ? $_SESSION['nombre'].' '.$_SESSION['apellidoPaterno'].' '.$_SESSION['apellidoMaterno'] : 'app';
+                    $this->InsertMascotaVete($FK_mascota, $nombre, $FK_Usuario, $nameUsuario, 2, 'EN RESGUARDO', $ID);
+                }
+            }
+
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -427,6 +467,24 @@ namespace citas\citasModel;
             $resultJson = json_encode( $result );
             return $resultJson;   
         }
-        
+
+        function liberarMascota($data){
+            // $request_body = file_get_contents('php://input');
+            // $data = json_decode($request_body, true);
+
+            $db = new ClaseConexionDB\ConexionDB();
+            $conexion = $db->getConectaDB();
+            $ID = $data['ID'];
+            
+            $FK_Usuario = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : 1;
+            $nameUsuario = isset($_SESSION['nombre']) ? $_SESSION['nombre'].' '.$_SESSION['apellidoPaterno'].' '.$_SESSION['apellidoMaterno'] : 'app';
+            $this->InsertMascotaVete('', '', $FK_Usuario, $nameUsuario, 3, 'SALIDA', $ID);
+
+            $result = array('success' => true, 'result' => 'Sin Datos');
+
+            mysqli_close( $conexion );
+            $resultJson = json_encode( $result );
+            return $resultJson;
+        }   
     }
 ?>

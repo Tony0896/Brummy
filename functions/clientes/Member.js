@@ -10,29 +10,29 @@ $(document).ready(function () {
     $("#nameCredential1").html(nameCredential);
     $("#claveCredential").html(claveCredential);
     $("#claveCredential1").html(claveCredential);
-    $("#correoCrendential").html(correo);
-    $("#nssCredential").html(correo);
-    $("#emergenciaCredential").html(emergenciaCredential);
-    $("#telefonoCrendential1").html(emergenciaCredential);
+    $("#correoCrendential").html(correo ? correo : "&nbsp;");
+    $("#nssCredential").html(correo ? correo : "&nbsp;");
+    $("#emergenciaCredential").html(emergenciaCredential ? emergenciaCredential : "&nbsp;");
+    $("#telefonoCrendential1").html(emergenciaCredential ? emergenciaCredential : "&nbsp;");
 
     $("#nameVete").html(localStorage.getItem("nameVete"));
     $("#nameVete0").html(localStorage.getItem("nameVete"));
 
-    $("#telcredentialvete").html(localStorage.getItem("telcredentialvete"));
-    $("#telcredentialvete0").html(localStorage.getItem("telcredentialvete"));
+    $("#telcredentialvete").html(localStorage.getItem("telcredentialvete") ? localStorage.getItem("telcredentialvete") : "&nbsp;");
+    $("#telcredentialvete0").html(localStorage.getItem("telcredentialvete") ? localStorage.getItem("telcredentialvete") : "&nbsp;");
 
-    $("#horario1credential").html(localStorage.getItem("horario1credential"));
-    $("#horario1credential0").html(localStorage.getItem("horario1credential"));
-    $("#horario2credential").html(localStorage.getItem("horario2credential"));
-    $("#horario2credential0").html(localStorage.getItem("horario2credential"));
-    $("#horario3credential").html(localStorage.getItem("horario3credential"));
-    $("#horario3credential0").html(localStorage.getItem("horario3credential"));
+    $("#horario1credential").html(localStorage.getItem("horario1credential") ? localStorage.getItem("horario1credential") : "&nbsp;");
+    $("#horario1credential0").html(localStorage.getItem("horario1credential") ? localStorage.getItem("horario1credential") : "&nbsp;");
+    $("#horario2credential").html(localStorage.getItem("horario2credential") ? localStorage.getItem("horario2credential") : "&nbsp;");
+    $("#horario2credential0").html(localStorage.getItem("horario2credential") ? localStorage.getItem("horario2credential") : "&nbsp;");
+    $("#horario3credential").html(localStorage.getItem("horario3credential") ? localStorage.getItem("horario3credential") : "&nbsp;");
+    $("#horario3credential0").html(localStorage.getItem("horario3credential") ? localStorage.getItem("horario3credential") : "&nbsp;");
 
-    $("#Direccion1credential").html(localStorage.getItem("Direccion1credential"));
-    $("#Direccion1credential0").html(localStorage.getItem("Direccion1credential"));
+    $("#Direccion1credential").html(localStorage.getItem("Direccion1credential") ? localStorage.getItem("Direccion1credential") : "&nbsp;");
+    $("#Direccion1credential0").html(localStorage.getItem("Direccion1credential") ? localStorage.getItem("Direccion1credential") : "&nbsp;");
 
-    $("#Direccion1credentia2").html(localStorage.getItem("Direccion1credentia2"));
-    $("#Direccion1credentia20").html(localStorage.getItem("Direccion1credentia2"));
+    $("#Direccion1credentia2").html(localStorage.getItem("Direccion1credentia2") ? localStorage.getItem("Direccion1credentia2") : "&nbsp;");
+    $("#Direccion1credentia20").html(localStorage.getItem("Direccion1credentia2") ? localStorage.getItem("Direccion1credentia2") : "&nbsp;");
 
     new QRious({
         element: document.querySelector("#qrCredential"),
@@ -54,8 +54,7 @@ $(document).ready(function () {
 });
 
 $("#crearpdf").click(() => {
-    $("#fotoCuts").attr("src") ? window.print() : window.print();
-    // Swal.fire({ icon: "warning", title: "Opps..", text: "La credencial aún no tiene una foto." });
+    $("#fotoCuts").attr("src") ? window.print() : Swal.fire({ icon: "warning", title: "Opps..", text: "La membresía aún no tiene una foto." });
 });
 
 function backRoute() {

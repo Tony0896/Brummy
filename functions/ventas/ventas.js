@@ -966,7 +966,7 @@ function downloadPDF(result1, result2) {
 
     let now = String(Date.now());
     let lastFive = now.substr(now.length - 8);
-    let namePDF = "VTABRHP_VTA-22" + lastFive + ".pdf";
+    let namePDF = "BRUHPS" + result1.folioVta + lastFive + ".pdf";
     let pdf = pdfMake.createPdf(docDefinition);
     pdf.download(namePDF);
     preloader.hide();

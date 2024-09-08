@@ -62,5 +62,10 @@
             return $result_model;
         }
         
+        function liberarMascota($data){
+            $model_citas = $this->getConexionModelClass();
+            $result_model = $model_citas->liberarMascota($data);
+            return $result_model;
+        }
     }
 ?>

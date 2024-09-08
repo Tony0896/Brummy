@@ -9,13 +9,13 @@
 <div class="row">
     <div class="col-sm-12 no_print" style="margin-bottom: 20px;margin-top: 10px;display: flex;">
         <div class="no_print">
-            <h4 class="text-primary text-blue" id="title_curso"> Credencial </h4>
+            <h4 class="text-primary text-blue" id="title_curso"> Membresía </h4>
         </div>
     </div>
     <div class="col-sm-12 no_print" style="margin-bottom: 20px;margin-top: 10px;display: flex;">
         <div style="display:flex; align-items: center;">
             <div class="numbers buttom-blue buttom" style="margin:0; height: fit-content;margin-right: 15px;" id="crearpdf">
-                <span class="text-sm mb-0 span_nowrap">Imprimir Credencial <i class="material-icons"> print </i></span>
+                <span class="text-sm mb-0 span_nowrap">Imprimir Membresía <i class="material-icons"> print </i></span>
             </div>
         </div>
 
