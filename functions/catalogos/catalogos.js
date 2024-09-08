@@ -3,6 +3,7 @@ $(document).ready(() => {
     obtenerEspecies();
     obtenerRazas();
     obtenerMotivos();
+    obtenerCategorias();
     // obtenerMotivosRechazo();
 });
 
@@ -787,6 +788,180 @@ function deleteMotivoRechazo(ID) {
                             $("#modalTemplate").modal("hide");
                             $("#btnClose").off("click");
                             obtenerMotivosRechazo();
+                            break;
+                        case false:
+                            preloader.hide();
+                            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                            break;
+                    }
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    preloader.hide();
+                    msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+                });
+        }
+    });
+}
+
+function crearCategoria() {
+    $("#labelModal").html(`Crear Nueva Categoría`);
+
+    $("#body_modal").html(`<br>
+        <div id="formCategoria">
+            <div class="coolinput">
+                <label name="Nombre Categoría" for="nombreCategoria" class="text">Nombre Categoría</label>
+                <input name="Nombre Categoría" type="text" class="capitalize obligatorio input" id="nombreCategoria" autocomplete="off" maxlength"50"/>
+            </div>
+        </div>
+
+        <div class="center-fitcomponent" style="width: 100%;">
+            <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" onclick="guardarCategoria();">
+                <span class="text-sm mb-0 span-buttom"> 
+                    Guardar
+                    <i class="material-icons"> save </i>
+                </span>
+            </div>
+        </div>
+    `);
+
+    $("#modalTemplate").modal({
+        backdrop: "static",
+        keyboard: false,
+    });
+
+    $("#modalTemplate").modal("show");
+
+    $("#btnClose").on("click", () => {
+        $("#modalTemplate").modal("hide");
+        $("#btnClose").off("click");
+    });
+}
+
+function guardarCategoria() {
+    let values = get_datos_completos("formCategoria");
+    let response = values.response;
+    let valido = values.valido;
+    if (valido) {
+        let nombreCategoria = String($("#nombreCategoria").val()).trim();
+        nombreCategoria = nombreCategoria.replaceAll("'", '"');
+        preloader.show();
+
+        $.ajax({
+            method: "POST",
+            dataType: "JSON",
+            url: "./views/catalogos/guardarCategoria.php",
+            data: { nombreCategoria },
+        })
+            .done(function (results) {
+                let success = results.success;
+                let result = results.result;
+                switch (success) {
+                    case true:
+                        $("#modalTemplate").modal("hide");
+                        $("#btnClose").off("click");
+                        msj.show("Aviso", "Guardado correctamente", [{ text1: "OK" }]);
+                        obtenerCategorias();
+                        break;
+                    case false:
+                        preloader.hide();
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                        break;
+                }
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                preloader.hide();
+                msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+            });
+    } else {
+        let html =
+            '<span style="font-weight: 900;">Debes llenar estos campos para poder guardar:</span> <br> <ul style="text-align: left; margin-left: 15px; font-style: italic;"> ';
+        response.forEach((data) => {
+            html += `<li style="list-style: disc;">${data}.</li> `;
+        });
+        html += `</ul>`;
+        Swal.fire({ icon: "warning", title: "", html: html });
+    }
+}
+
+function obtenerCategorias() {
+    $.ajax({
+        method: "POST",
+        dataType: "JSON",
+        url: "./views/catalogos/obtenerCategorias.php",
+        data: {},
+    })
+        .done(function (results) {
+            let success = results.success;
+            let result = results.result;
+            let html = "";
+            switch (success) {
+                case true:
+                    if (result == "Sin Datos") {
+                        dataTableDestroy();
+                        $("#categoriaBody").html(html);
+                        dataTableCreate();
+                        preloader.hide();
+                    } else {
+                        dataTableDestroy();
+                        result.forEach((data, index) => {
+                            html += `<tr>
+                                <td>${index + 1}</td>
+                                <td class="capitalize">${data.nombreCategoria}</td>
+                                <td>
+                                    <div style="display: flex; flex-direction: row;">
+                                        <div class="buttom-red buttom button-sinText mx-1" title="Eliminar" onclick="deleteCategoria(${data.ID})">
+                                            <span class="text-sm mb-0"><i class="material-icons"> delete </i></span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>`;
+                        });
+                        $("#categoriaBody").html(html);
+                        dataTableCreate();
+                    }
+                    break;
+                case false:
+                    preloader.hide();
+                    msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    break;
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            preloader.hide();
+            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+            console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+        });
+}
+
+function deleteCategoria(ID) {
+    Swal.fire({
+        title: "",
+        text: "¿Estás seguro de querer eliminar el registro?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#7066e0",
+        cancelButtonColor: "#FF0037",
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancelar",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            preloader.show();
+            $.ajax({
+                method: "POST",
+                dataType: "JSON",
+                url: "./views/catalogos/deleteCategoria.php",
+                data: { ID },
+            })
+                .done(function (results) {
+                    let success = results.success;
+                    let result = results.result;
+                    switch (success) {
+                        case true:
+                            $("#modalTemplate").modal("hide");
+                            $("#btnClose").off("click");
+                            obtenerCategorias();
                             break;
                         case false:
                             preloader.hide();

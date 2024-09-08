@@ -29,11 +29,11 @@
                             Rechazos
                         </button>
                     </li> -->
-                    <!-- <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">
-                            Contact
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false" style="border-top-left-radius: 10px;border-top-right-radius: 10px;">
+                            Categorías
                         </button>
-                    </li> -->
+                    </li>
                 </ul>
                 <div class="tab-content px-0 pt-0 pb-0" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">  
@@ -56,6 +56,7 @@
                             </tbody>
                         </table>
                     </div>
+
                     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab"> 
                         <div class="row" style="margin-bottom: 0.7em;">
                             <div class="col-md-12 mb-2" style="display: flex;justify-content: end;">
@@ -77,6 +78,7 @@
                             </tbody>
                         </table>
                     </div>
+                    
                     <div class="tab-pane fade" id="motivosCita" role="tabpanel" aria-labelledby="motivosCita-tab"> 
                         <div class="row" style="margin-bottom: 0.7em;">
                             <div class="col-md-12 mb-2" style="display: flex;justify-content: end;">
@@ -98,6 +100,7 @@
                             </tbody>
                         </table>
                     </div>
+
                     <!-- <div class="tab-pane fade" id="rechazosCita" role="tabpanel" aria-labelledby="rechazosCita-tab"> 
                         <div class="row" style="margin-bottom: 0.7em;">
                             <div class="col-md-12 mb-2" style="display: flex;justify-content: end;">
@@ -119,7 +122,26 @@
                         </table>
                     </div> -->
                     
-                    <!-- <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab"> data => contact-tab </div> -->
+                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab"> 
+                        <div class="row" style="margin-bottom: 0.7em;">
+                            <div class="col-md-12 mb-2" style="display: flex;justify-content: end;">
+                                <div class="buttom-green buttom" onclick="crearCategoria()">
+                                    <span class="text-sm mb-0">Crear <i class="material-icons"> add_circle </i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="mdl-data-table table responsive table-bordered table-striped datatable" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Categoría</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categoriaBody">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>        
         </div>

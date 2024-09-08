@@ -86,5 +86,22 @@
             return $result_model;
         }
         
+        function guardarCategoria($data){
+            $model_catalogos = $this->getConexionModelClass();
+            $result_model = $model_catalogos->guardarCategoria($data);
+            return $result_model;
+        }
+        
+        function obtenerCategorias(){
+            $model_catalogos = $this->getConexionModelClass();
+            $result_model = $model_catalogos->obtenerCategorias();
+            return $result_model;
+        }
+
+        function deleteCategoria($data){
+            $model_catalogos = $this->getConexionModelClass();
+            $result_model = $model_catalogos->deleteCategoria($data);
+            return $result_model;
+        }
     }
 ?>

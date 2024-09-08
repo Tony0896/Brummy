@@ -52,9 +52,11 @@ namespace inventario\inventarioModel;
             $precioVenta = $data['precioVenta'];
             $stockMinimo = $data['stockMinimo'];
             $stockReal = $data['stockReal'];
+            $categoria = $data['categoria'];
+            $nameCategoria = $data['nameCategoria'];
 
-            $sql = "INSERT INTO inventario (codigo, nombre, descripcion, tipo, Flagtipo, precioCompra, precioVenta, stockMinimo, stockReal, fechaCreacion)
-            VALUES ('$codigo', '$nombre', '$descripcion', '$tipoProducto', '$tipoProducto', '$precioCompra', '$precioVenta', '$stockMinimo', '$stockReal', current_timestamp())";
+            $sql = "INSERT INTO inventario (codigo, nombre, descripcion, tipo, Flagtipo, precioCompra, precioVenta, stockMinimo, stockReal, fechaCreacion, categoria, nameCategoria)
+            VALUES ('$codigo', '$nombre', '$descripcion', '$tipoProducto', '$tipoProducto', '$precioCompra', '$precioVenta', '$stockMinimo', '$stockReal', current_timestamp(), $categoria, '$nameCategoria')";
 
             try{
                 $stmt = mysqli_query($conexion, $sql);
