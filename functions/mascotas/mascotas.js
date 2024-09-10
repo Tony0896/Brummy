@@ -178,26 +178,114 @@ function crearMascota() {
                                                     </div>
 
                                                     <br>
-                                                    <div class="coolinput">
-                                                        <div class="container_upload"> 
-                                                            <div class="header_upload"> 
-                                                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> 
-                                                                <path d="M7 10V9C7 6.23858 9.23858 4 12 4C14.7614 4 17 6.23858 17 9V10C19.2091 10 21 11.7909 21 14C21 15.4806 20.1956 16.8084 19 17.5M7 10C4.79086 10 3 11.7909 3 14C3 15.4806 3.8044 16.8084 5 17.5M7 10C7.43285 10 7.84965 10.0688 8.24006 10.1959M12 12V21M12 12L15 15M12 12L9 15" stroke="#009071" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg> <p>Adjuntar una foto de la mascota!</p>
-                                                            </div> 
-                                                            <input id="file" type="file"> 
-                                                        </div>
+                                                    <div class="coolinput" style="width: 200px;margin: auto;">
+                                                        <input type="file" class="my-pond" name="filepond" />
                                                     </div>
 
                                                     <div class="center-fitcomponent" style="width: 100%;">
-                                                        <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" onclick="guardarMascota();">
+                                                        <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="PreGuardarMascota">
                                                             <span class="text-sm mb-0 span-buttom">
                                                                 Guardar
                                                                 <i class="material-icons"> save </i>
                                                             </span>
                                                         </div>
                                                     </div>
+
+                                                    div class="row" style="margin-bottom: 25px;display:none;">
+                                                        <button type="button" class="btn btn-primary" id="SendFiles">Save changes</button>
+                                                        <input type="hidden" id="FKMascotaResponse">
+                                                    </div>
+
                                                 </div>
                                             `);
+
+                                            $(function () {
+                                                // First register any plugins
+                                                $.fn.filepond.registerPlugin(
+                                                    FilePondPluginFileValidateType,
+                                                    FilePondPluginImageExifOrientation,
+                                                    FilePondPluginImagePreview,
+                                                    FilePondPluginImageCrop,
+                                                    FilePondPluginImageResize,
+                                                    FilePondPluginImageTransform,
+                                                    FilePondPluginImageEdit
+                                                );
+
+                                                // Turn input element into a pond
+                                                $(".my-pond").filepond();
+
+                                                // Set allowMultiple property to true
+                                                $(".my-pond").filepond("allowMultiple", false);
+                                                $(".my-pond").filepond("labelIdle", "Agregar Imagen mascota");
+                                                $(".my-pond").filepond("imagePreviewHeight", 170);
+                                                $(".my-pond").filepond("imageCropAspectRatio", "1:1");
+                                                $(".my-pond").filepond("imageResizeTargetWidth", 200);
+                                                $(".my-pond").filepond("imageResizeTargetHeight", 200);
+                                                $(".my-pond").filepond("stylePanelLayout", "circle");
+                                                $(".my-pond").filepond("styleLoadIndicatorPosition", "center bottom");
+                                                $(".my-pond").filepond("styleProgressIndicatorPosition", "right bottom");
+                                                $(".my-pond").filepond("styleButtonRemoveItemPosition", "left bottom");
+                                                $(".my-pond").filepond("styleButtonProcessItemPosition", "right bottom");
+
+                                                // Listen for addfile event
+                                                $(".my-pond").on("FilePond:addfile", function (e) {
+                                                    console.log("file added event", e);
+                                                });
+
+                                                // Manually add a file using the addfile method
+                                                // $(".my-pond")
+                                                //     .first()
+                                                //     .filepond("addFile", "index.html")
+                                                //     .then(function (file) {
+                                                //         console.log("file added", file);
+                                                //     });
+
+                                                $("#PreGuardarMascota").click(() => {
+                                                    pondFiles = $(".my-pond").filepond("getFiles");
+                                                    if (pondFiles.length > 0) {
+                                                        guardarMascota();
+                                                    } else {
+                                                        msj.show("Aviso", "Aún no tienes una imagen de la mascota.", [{ text1: "OK" }]);
+                                                    }
+                                                });
+
+                                                $("#SendFiles").click(() => {
+                                                    let formData = new FormData();
+                                                    // append files array into the form data
+                                                    pondFiles = $(".my-pond").filepond("getFiles");
+                                                    if (pondFiles.length > 0) {
+                                                        for (var i = 0; i < pondFiles.length; i++) {
+                                                            formData.append("Adjunto_" + i, pondFiles[i].file);
+                                                        }
+                                                        formData.append("NoDocs", pondFiles.length);
+                                                        formData.append("FKPertenece", $("#FKMascotaResponse").val());
+                                                        formData.append("IDModulo", 6);
+                                                        formData.append("IDAccion", 1);
+                                                        formData.append("NombreModulo", "Mascotas");
+                                                        formData.append("fechaRegistro", moment().format("YYYY-MM-DD"));
+                                                        formData.append("fechaRegistroH", moment().format("YYYY-MM-DDTHH:mm:ss"));
+
+                                                        $.ajax({
+                                                            url: "views/login/guardaDocs.php",
+                                                            type: "POST",
+                                                            data: formData,
+                                                            dataType: "JSON",
+                                                            contentType: false,
+                                                            cache: false,
+                                                            processData: false,
+                                                            success: function (data) {
+                                                                //    todo the logic
+                                                                // remove the files from filepond, etc
+                                                            },
+                                                            error: function (data) {
+                                                                //    todo the logic
+                                                            },
+                                                        });
+                                                    } else {
+                                                        msj.show("Aviso", "Aún no tienes una imagen de la mascota.", [{ text1: "OK" }]);
+                                                    }
+                                                });
+                                            });
 
                                             $("#modalTemplate").modal({
                                                 backdrop: "static",
@@ -265,16 +353,13 @@ function guardarMascota() {
         let FK_dueno = String($("#FK_dueno").val());
         let temperamentoMascota = $("#temperamentoMascota").val();
 
-        nombre.replaceAll("'", '"');
-        fechaNacimiento.replaceAll("'", '"');
-        FK_especie.replaceAll("'", '"');
-        especie.replaceAll("'", '"');
-        raza.replaceAll("'", '"');
-        FK_raza.replaceAll("'", '"');
-        sexo.replaceAll("'", '"');
-        color.replaceAll("'", '"');
-        rasgosParticulares.replaceAll("'", '"');
-        FK_dueno.replaceAll("'", '"');
+        nombre = nombre.replaceAll("'", '"');
+        fechaNacimiento = fechaNacimiento.replaceAll("'", '"');
+        especie = especie.replaceAll("'", '"');
+        raza = raza.replaceAll("'", '"');
+        sexo = sexo.replaceAll("'", '"');
+        color = color.replaceAll("'", '"');
+        rasgosParticulares = rasgosParticulares.replaceAll("'", '"');
 
         preloader.show();
         $.ajax({
@@ -288,6 +373,9 @@ function guardarMascota() {
                 let result = results.result;
                 switch (success) {
                     case true:
+                        let result2 = results.result2;
+                        $("#FKMascotaResponse").val(result2);
+                        $("#SendFiles").trigger("click");
                         $("#modalTemplate").modal("hide");
                         $("#btnClose").off("click");
                         msj.show("Aviso", "Guardado correctamente", [{ text1: "OK" }]);

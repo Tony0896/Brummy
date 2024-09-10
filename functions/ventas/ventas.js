@@ -129,7 +129,8 @@ function verDetalleVenta(ID, cambioVenta) {
                 efectivo,
                 price,
                 Fecha,
-                devuelto;
+                devuelto,
+                totalDescuentos;
             switch (success) {
                 case true:
                     if (result == "Sin Datos") {
@@ -137,11 +138,14 @@ function verDetalleVenta(ID, cambioVenta) {
                         preloader.hide();
                     } else {
                         result.forEach((data, index) => {
-                            let random = genRandom();
+                            let random = `${data.ID}` + genRandom();
+                            // console.log(random);
                             nombreCliente = data.nombreCliente;
                             Fecha = obtenerFechaLarga(data.Fecha + " 00:00:00");
                             cambio = data.cambio;
                             devuelto = data.devuelto;
+                            totalDescuentos = data.totalDescuentos;
+                            subTotal = data.subTotal;
                             if (Number(cambio) <= 0) {
                                 efectivo = data.price;
                             } else {
@@ -172,6 +176,21 @@ function verDetalleVenta(ID, cambioVenta) {
                                     <label class="price small my-auto" id="${random}_totals">$${CantidadConCommas(data.precioVenta)} c/u</label>
                                     <label class="price small my-auto edit" id="${random}_total">$${data.total}</label>
                                 </div>
+                                ${
+                                    Number(data.descuento) > 0
+                                        ? `<div id="${random}_productDescuento">
+                                        <div class="descuentosProductos" style="text-align: end;">
+                                            <span class="price small my-auto" style="color: #FF0037;margin-right: 20px;">- $${Number(
+                                                data.descuento
+                                            ).toFixed(2)}</span>
+                                        </div>
+                                        <input type="hidden" id="${random}_productDescuentoText" value="${Number(data.descuento).toFixed(2)}">
+                                        <input type="hidden" id="${random}_productDescuentoBack" value="${Number(
+                                              Number(data.descuento) / data.cantidad
+                                          )}">
+                                    </div>`
+                                        : `<input type="hidden" id="${random}_productDescuentoText" value="${Number(0).toFixed(2)}">`
+                                }
                                 <div id="${random}_comentarios" style="display: none;">
                                              ${
                                                  data.tipo == "Servicio"
@@ -261,11 +280,11 @@ function verDetalleVenta(ID, cambioVenta) {
                                         <div class="checkout">
                                             <div class="details">
                                                 <span>Subtotal:</span>
-                                                <span id="totalSubtotal">$${CantidadConCommas(price)}</span>
+                                                <span id="totalSubtotal">$${CantidadConCommas(subTotal)}</span>
                                             </div>
                                             <div class="details">
                                                 <span>Descuentos de productos:</span>
-                                                <span id="totalDescuentos">$0.00</span>
+                                                <span id="totalDescuentos">$${CantidadConCommas(totalDescuentos)}</span>
                                             </div>
                                             <hr>
                                             <div class="checkout--footer">
@@ -367,10 +386,20 @@ function removeACuentaEdita(ID) {
     if (cantidadActual == 0) {
     } else {
         let costoProducto = Number(String($("#" + random + "_costo").val()).replace("_costo", "")).toFixed(2);
+        let descuentosTotal = Number(String($("#" + random + "_productDescuentoText").val()));
+        let descuentosTotalProduct = Number(Number(String($("#" + random + "_productDescuentoText").val())) / cantidadActual);
+        let productDescuentoBack = Number(String($("#" + random + "_productDescuentoBack").val()));
         cantidadActual = Number(cantidadActual) - 1;
         costoProducto = Number(Number(costoProducto) * cantidadActual);
         $("#" + random + "_label").text(cantidadActual);
         $("#" + random + "_total").text("$" + Number(costoProducto).toFixed(2));
+        descuentosTotal = descuentosTotal - descuentosTotalProduct;
+        $("#" + random + "_productDescuento").html(`
+            <div class="descuentosProductos" style="text-align: end;">
+                <span class="price small my-auto" style="color: #FF0037;margin-right: 20px;">- $${Number(descuentosTotal).toFixed(2)}</span>
+            </div>
+            <input type="hidden" id="${random}_productDescuentoText" value="${descuentosTotal}">
+            <input type="hidden" id="${random}_productDescuentoBack" value="${productDescuentoBack}">`);
         obtenerTotalEdit();
     }
     let stockReal = Number(String($("#" + random + "_real").text()).replace("_stock", ""));
@@ -386,6 +415,7 @@ function removeACuentaEdita(ID) {
 
 function addACuentaEdita(ID) {
     let random = String(ID).replace("_add", "");
+    // console.log(random);
     let stockReal = Number(String($("#" + random + "_real").text()).replace("_stock", ""));
     let cantidadActual = Number(String($("#" + random + "_label").text()).replace("_label", "")).toFixed();
     let Flagtipo = String($("#" + random + "_Flagtipo").val()).replace("_Flagtipo", "");
@@ -396,6 +426,16 @@ function addACuentaEdita(ID) {
     let costoProducto = Number(String($("#" + random + "_costo").val()).replace("_costo", "")).toFixed(2);
     cantidadActual = Number(cantidadActual) + 1;
     costoProducto = Number(Number(costoProducto) * cantidadActual);
+    let descuentosTotal = Number(String($("#" + random + "_productDescuentoText").val()));
+    let descuentosTotalProduct = Number(Number(String($("#" + random + "_productDescuentoBack").val())));
+    descuentosTotal = descuentosTotal + descuentosTotalProduct;
+    $("#" + random + "_productDescuento").html(`
+        <div class="descuentosProductos" style="text-align: end;">
+            <span class="price small my-auto" style="color: #FF0037;margin-right: 20px;">- $${Number(descuentosTotal).toFixed(2)}</span>
+        </div>
+        <input type="hidden" id="${random}_productDescuentoText" value="${descuentosTotal}">
+        <input type="hidden" id="${random}_productDescuentoBack" value="${descuentosTotalProduct}">        
+    `);
     $("#" + random + "_label").text(cantidadActual);
     $("#" + random + "_total").text("$" + Number(costoProducto).toFixed(2));
     obtenerTotalEdit();
@@ -417,8 +457,23 @@ function obtenerTotalEdit() {
     campos.forEach((campos) => {
         let price1 = 0;
         price1 = String(campos.innerText).replace("$", "");
+        // console.log(price1);
         price = Number(price) + Number(price1);
+        // console.log(price);
     });
+
+    let campos2;
+    campos2 = document.querySelectorAll(".descuentosProductos span");
+    let price2 = 0;
+    campos2.forEach((campos2) => {
+        let price12 = 0;
+        price12 = String(campos2.innerText).replace(" $", "");
+        // console.log(price12);
+        price2 = Number(price2) + Number(price12);
+        // console.log(price2);
+    });
+
+    price = Number(price) + Number(price2);
 
     $("#priceTotal").val(Number($("#priceTotal_text").val()) - price);
     $("#priceTotal_text_EDIT").html("<sup>$</sup>" + Number(Number($("#priceTotal_text").val()) - price).toFixed(2));
@@ -474,7 +529,7 @@ function cerrarCarritoPost(ID) {
                                                 devuelveStock = 1;
                                             }
                                             let comentariosAdicionales = $("#comentariosAdicionales_" + random).val();
-
+                                            let descuento = Number(Number(String($("#" + random + "_productDescuentoBack").val())));
                                             $.ajax({
                                                 method: "POST",
                                                 dataType: "JSON",
@@ -489,6 +544,7 @@ function cerrarCarritoPost(ID) {
                                                     newStock,
                                                     devuelveStock,
                                                     comentariosAdicionales,
+                                                    descuento,
                                                 },
                                             })
                                                 .done(function (results) {
@@ -597,7 +653,9 @@ function generarTicketVenta(ID, cambioVenta) {
                                                     efectivo,
                                                     price,
                                                     Fecha,
-                                                    devuelto;
+                                                    devuelto,
+                                                    totalSubtotal,
+                                                    totalDescuentos;
                                                 switch (success) {
                                                     case true:
                                                         if (result == "Sin Datos") {
@@ -619,6 +677,8 @@ function generarTicketVenta(ID, cambioVenta) {
                                                                     efectivo = data.efectivo;
                                                                 }
                                                                 price = data.price;
+                                                                totalSubtotal = data.subTotal;
+                                                                totalDescuentos = data.totalDescuentos;
 
                                                                 data2 = [
                                                                     ...data2,
@@ -694,9 +754,9 @@ function generarTicketVenta(ID, cambioVenta) {
                                                                 folioVta,
                                                                 nombreCliente,
                                                                 Fecha,
-                                                                totalSubtotal: `$${CantidadConCommas(price)}`,
-                                                                totalDescuentos: `$0.00`,
-                                                                totalVenta: `${CantidadConCommas(price)}`,
+                                                                totalSubtotal: `$${CantidadConCommas(totalSubtotal)}`,
+                                                                totalDescuentos: `$${CantidadConCommas(totalDescuentos)}`,
+                                                                totalVenta: `$${CantidadConCommas(Number(price).toFixed(2))}`,
                                                                 efectivo: `$${CantidadConCommas(efectivo)}`,
                                                                 cambio: `$${CantidadConCommas(cambio)}`,
                                                                 totalDevuelto,
@@ -743,7 +803,7 @@ function generarTicketVenta(ID, cambioVenta) {
 }
 
 function downloadPDF(result1, result2) {
-    console.log(result1, result2);
+    // console.log(result1, result2);
     let url = getCurrentURL();
     pdfMake.fonts = {
         Roboto: {

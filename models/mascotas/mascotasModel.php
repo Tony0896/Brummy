@@ -80,7 +80,6 @@ namespace mascotas\mascotasModel;
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
-                    $result = array('success' => true, 'result' => 'Sin Datos');
                     $sql = "SELECT * FROM mascotas ORDER BY ID DESC LIMIT 1";
                     try{
                         $stmt = mysqli_query($conexion, $sql);
@@ -98,6 +97,7 @@ namespace mascotas\mascotasModel;
                                     $ID_mov = $row['ID'];
                                 }
                                 $this->InsertHistoriaMascota($FK_mascota, $nombre, $FK_modulo, $nombreModulo, $motivo, $FK_Usuario, $nameUsuario, $ID_mov);
+                                $result = array('success' => true, 'result' => 'Sin Datos', 'result2' => $FK_mascota);
                             }
                         }
                     } catch (mysqli_sql_exception $e) { }

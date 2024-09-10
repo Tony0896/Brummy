@@ -78,5 +78,15 @@
             $result_model = $model_citas->cargarMascotasResguardo();
             return $result_model;
         }
+
+        function guardaDocs($DATA_USERS_INFO){
+            $ARR_DATOS_PACKAGE = [];
+            $ARR_DATOS_PACKAGE['DATA_USERS_INFO'] = [$DATA_USERS_INFO];
+            $ARR_DATOS_PACKAGE['DATOS_SESSION']['flag_app_usua'] = 'Hola';
+            // $ARR_DATOS_PACKAGE['DATOS_SESSION']['array_rol_seccion_usua'] =  $_SESSION['array_rol_seccion_usua'];
+            $model_citas = $this->getConexionModelClass();
+            $result_model = $model_citas->guardaDocs($ARR_DATOS_PACKAGE);
+            return $result_model;
+        }
     }
 ?>

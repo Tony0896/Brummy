@@ -114,7 +114,7 @@ function confirmarAgregarProducto() {
             if (result.isConfirmed) {
                 let random = genRandom();
                 $(".products").append(`
-                    <div id="${random}_product">
+                    <div id="${random}_product" class="productoD">
                         <div class="product">
                             <input type="hidden" id="${random}_stock" value="${stockReal}">
                             <input type="hidden" id="${random}_costo" value="${Number(precioVenta).toFixed(2)}">
@@ -157,6 +157,8 @@ function guardarVenta() {
     preloader.show();
     let cliente = $("#clientes").val();
     let price = $("#priceTotal").val();
+    let subTotal = $("#subTotalText").val();
+    let totalDescuentos = $("#totalDescuentosText").val();
     let FlagExacto = 1;
     let efectivo = 0;
     let cambio = 0;
@@ -173,7 +175,7 @@ function guardarVenta() {
         method: "POST",
         dataType: "JSON",
         url: "./views/ventas/guardarHeaderVenta.php",
-        data: { cliente, price, FlagExacto, efectivo, cambio, nameCliente },
+        data: { cliente, price, FlagExacto, efectivo, cambio, nameCliente, subTotal, totalDescuentos },
     })
         .done(function (results) {
             let success = results.success;
@@ -186,7 +188,7 @@ function guardarVenta() {
                         result.forEach((data, index) => {
                             let dataID = data.IDHeader;
                             let campos;
-                            campos = document.querySelectorAll(".products div");
+                            campos = document.querySelectorAll(".products div.productoD");
                             let random = 0;
                             campos.forEach((campos) => {
                                 if (campos.id) {
@@ -196,13 +198,14 @@ function guardarVenta() {
                                     let label = $("#" + random + "_label").text();
                                     let total = Number(String($("#" + random + "_total").text()).replace("$", ""));
                                     let stock = $("#" + random + "_stock").val();
+                                    let descuento = $("#" + random + "_productDescuentos").val();
                                     let newStock = Number(stock) - Number(label);
 
                                     $.ajax({
                                         method: "POST",
                                         dataType: "JSON",
                                         url: "./views/ventas/guardarDetalleVenta.php",
-                                        data: { dataID, FlagProducto, FKProducto, label, total, newStock },
+                                        data: { dataID, FlagProducto, FKProducto, label, total, newStock, descuento },
                                     })
                                         .done(function (results) {
                                             let success = results.success;
@@ -266,6 +269,7 @@ function addACuenta(ID) {
         $(`#${random}_productDescuento`).html(`
             <div class="descuentosProductos" style="text-align: end;">
                 <span class="price small my-auto" style="color: #FF0037;margin-right: 20px;">- $${Number(descuentos).toFixed(2)}</span>
+                <input type="hidden" id="${random}_productDescuentos" value="${descuentos}">
             </div>
         `);
     }
@@ -288,12 +292,11 @@ function removeACuenta(ID) {
         if (descuentos != 0) {
             descuentos = Number(Number(descuentos) * cantidadActual);
             $(`#${random}_productDescuento`).html(`
-            <div class="descuentosProductos" style="text-align: end;">
-                <span class="price small my-auto" style="color: #FF0037;margin-right: 20px;">- $${Number(descuentos).toFixed(2)}</span>
-            </div>
-        `);
+                <div class="descuentosProductos" style="text-align: end;">
+                    <span class="price small my-auto" style="color: #FF0037;margin-right: 20px;">- $${Number(descuentos).toFixed(2)}</span>
+                </div>
+            `);
         }
-
         obtenerTotal();
     }
 }
@@ -320,11 +323,13 @@ function obtenerTotal() {
     });
 
     $("#totalSubtotal").html("<sup>$</sup>" + Number(price).toFixed(2));
+    $("#subTotalText").val(Number(price).toFixed(2));
 
     price = Number(price) - Number(totalDescuentos);
     $("#priceTotal").val(price);
     $("#priceTotal_text").html("<sup>$</sup>" + Number(price).toFixed(2));
     $("#totalDescuentos").html("<sup>$</sup>" + Number(totalDescuentos).toFixed(2));
+    $("#totalDescuentosText").val(Number(totalDescuentos).toFixed(2));
 }
 
 function deleteProducto(random) {

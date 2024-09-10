@@ -423,5 +423,66 @@ namespace login\loginModel;
             $resultJson = json_encode( $result );
             return $resultJson;
         }
+
+        function guardaDocs($ARR_DATOS_PACKAGE){
+            $db = new ClaseConexionDB\ConexionDB();
+            $conexion = $db->getConectaDB();
+
+            $ARR_DATA_FORM = $ARR_DATOS_PACKAGE['DATA_USERS_INFO'][0];
+            $DATOS_PACKAGE_SESSION = $ARR_DATOS_PACKAGE['DATOS_SESSION'];
+
+            $val_arr_files = intval($ARR_DATA_FORM['data_post']['NoDocs']);
+            $IDAccion = $ARR_DATA_FORM['data_post']['IDAccion'];
+            $IDModulo = $ARR_DATA_FORM['data_post']['IDModulo'];
+            $FKPertenece = $ARR_DATA_FORM['data_post']['FKPertenece'];
+            $NombreModulo = $ARR_DATA_FORM['data_post']['NombreModulo'];
+            $estatus = 1;
+            $msj_exist_directory = '';
+
+            if ($val_arr_files > 0) {
+                if($IDAccion == 1){
+                    $ruta_mov_file = 'Brummy/images/HPS/Mascotas/Perfil';
+                    $motivoMovimiento = 'Foto mascota agregada';
+                }
+
+                for ($i=0; $i < $val_arr_files ; $i++) {
+                    $name_inique = "/". uniqid()."_".$ARR_DATA_FORM['data_files'][$i]['name'];
+                    if ( move_uploaded_file( $ARR_DATA_FORM['data_files'][$i]['tmp_name'],$_SERVER["DOCUMENT_ROOT"].'/'.$ruta_mov_file.$name_inique) ) {
+                        $ruta_anexo = $ruta_mov_file.$name_inique;
+                        $movi_status = 200;
+                        
+                        $FKUsuarioCrea = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : '1';
+                        $nombre = isset($_SESSION['nombre']) ? $_SESSION['nombre'] : 'app';
+                        $apellidop = isset($_SESSION['apellidoPaterno']) ? $_SESSION['apellidoPaterno'] : 'app';
+                        $apellidom = isset($_SESSION['apellidoMaterno']) ? $_SESSION['apellidoMaterno'] : 'app';
+                        $FlagUsuarioCrea = $nombre.' '.$apellidop.' '.$apellidom;
+
+                        $sql = "INSERT INTO multimedia (urlAnexo, FKPertenece, IDModulo, IDAccion, NombreModulo, motivoMovimiento, estatus, FKUsuarioCrea, FlagUsuarioCrea)
+                        VALUES('$ruta_anexo', $FKPertenece, $IDModulo, $IDAccion, '$NombreModulo', '$motivoMovimiento', $estatus, $FKUsuarioCrea, '$FlagUsuarioCrea')";
+
+                        try{
+                            $stmt = mysqli_query($conexion, $sql);
+                            if($stmt){
+                                $result = array('success' => true, 'result' => true);
+                            } else {
+                                $result = array('success' => false, 'result' => 'error_execute_query', "result_query_sql_error"=>"Error no conocido" );
+                            }
+                        } catch (mysqli_sql_exception $e) {
+                            $result = array('success' => false, 'result' => 'error_conection_sql', "result_query_sql_error"=>$e->getMessage() );
+                        }
+
+                    } else {
+                        $movi_status = 500;
+                    }
+                }
+
+            } else {
+                $movi_status = 200;
+            }
+
+            mysqli_close( $conexion );
+            $resultJson = json_encode( $movi_status );
+            return $resultJson;
+        }
     }
 ?>

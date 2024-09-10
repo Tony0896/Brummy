@@ -81,11 +81,13 @@
                             <div class="details">
                                 <span>Subtotal:</span>
                                 <span id="totalSubtotal">$0.00</span>
+                                <input type="hidden" id="subTotalText">
                             </div>
                             <hr>
                             <div class="details">
                                 <span>Descuentos de productos:</span>
                                 <span id="totalDescuentos">$0.00</span>
+                                <input type="hidden" id="totalDescuentosText">
                             </div>
                             <hr>
                             <div class="checkout--footer">

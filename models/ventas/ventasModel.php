@@ -34,9 +34,11 @@ namespace ventas\ventasModel;
             $FlagExacto = $data['FlagExacto'];
             $efectivo = $data['efectivo'];
             $cambio = $data['cambio'];
+            $totalDescuentos = $data['totalDescuentos'];
+            $subTotal = $data['subTotal'];
 
-            $sql = "INSERT INTO ventaHeader (cliente, price, FlagExacto, efectivo, cambio, fechaCreacion)
-            VALUES ($cliente, '$price', '$FlagExacto', '$efectivo', '$cambio', current_timestamp())";
+            $sql = "INSERT INTO ventaHeader (cliente, price, FlagExacto, efectivo, cambio, fechaCreacion, totalDescuentos, subTotal)
+            VALUES ($cliente, '$price', '$FlagExacto', '$efectivo', '$cambio', current_timestamp(), '$totalDescuentos', '$subTotal')";
 
             try{
                 $stmt = mysqli_query($conexion, $sql);
@@ -95,9 +97,10 @@ namespace ventas\ventasModel;
             $label = $data['label'];
             $total = $data['total'];
             $newStock = $data['newStock'];
+            $descuento = $data['descuento'];
 
-            $sql = "INSERT INTO ventaDetalle (FKVenta, FlagProducto, FKProducto, cantidad, total)
-            VALUES ( '$dataID', '$FlagProducto', '$FKProducto', '$label', '$total' )";
+            $sql = "INSERT INTO ventaDetalle (FKVenta, FlagProducto, FKProducto, cantidad, total, descuento)
+            VALUES ( '$dataID', '$FlagProducto', '$FKProducto', '$label', '$total', '$descuento' )";
 
             try{
                 $stmt = mysqli_query($conexion, $sql);
@@ -291,9 +294,10 @@ namespace ventas\ventasModel;
             $newStock = $data['newStock'];
             $devuelveStock = $data['devuelveStock'];
             $comentariosAdicionales = $data['comentariosAdicionales'];
+            $descuento = $data['descuento'];
 
-            $sql = "INSERT INTO ventadetallecambios (FKVentaOrigin, FKVenta, FlagProducto, FKProducto, cantidad, total, newStock, devulveStock, comentarios)
-            VALUES ( '$IDorigin', '$dataID', '$FlagProducto', '$FKProducto', '$label', '$total', '$newStock', $devuelveStock, '$comentariosAdicionales' )";
+            $sql = "INSERT INTO ventadetallecambios (FKVentaOrigin, FKVenta, FlagProducto, FKProducto, cantidad, total, newStock, devulveStock, comentarios, descuento)
+            VALUES ( '$IDorigin', '$dataID', '$FlagProducto', '$FKProducto', '$label', '$total', '$newStock', $devuelveStock, '$comentariosAdicionales', '$descuento')";
 
             try{
                 $stmt = mysqli_query($conexion, $sql);

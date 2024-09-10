@@ -346,7 +346,7 @@ function verProducto(ID) {
                                                             <input name="Descripción" type="text" class="capitalize input producto servicio obligatorio" id="descripcion" autocomplete="off" maxlength"20"/>
                                                         </div>
                         
-                                                        <div class="coolinput div_producto">
+                                                        <div class="coolinput div_producto div_servicio">
                                                             <label for="categoria" class="text">Categoría</label>
                                                             <select name="Categoría" class="capitalize input producto obligatorio" id="categoria" style="background-color: rgb(255, 255, 255);width:100%;">
                                                                 <option value="">Selecciona una opción</option>

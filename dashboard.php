@@ -48,7 +48,10 @@ if( !$boolean_session ){
         <link rel="stylesheet" href="./libraries/jsCalendar/jsCalendar.min.css" />
         <link rel="stylesheet" href="./libraries/mdtimepicker/mdtimepicker.css" />
         <link rel="stylesheet" href="./libraries/duDatepicker/duDatepicker.css" />
+        <link rel="stylesheet" href="./libraries/filepond/filepond.css" rel="stylesheet" />
+        <link rel="stylesheet" href="./libraries/filepond/filepond-plugin-image-preview.css" rel="stylesheet" />
         <link rel="stylesheet" media="all" href="./css/CDN/cropper.css" />
+        <link href="./libraries/filepond/filepond-plugin-image-edit.css" rel="stylesheet"/>
     </head>
 
     <style>
@@ -489,5 +492,15 @@ if( !$boolean_session ){
         <script type="text/javascript" src="./libraries/cropper/cropper.js"></script>
         <script type="text/javascript" src="./libraries/PDF/pdfmake.min.js"></script>
         <script type="text/javascript" src="./libraries/PDF/vfs_fonts.js"></script> 
+        <script type="text/javascript" src="./libraries/filepond/filepond-plugin-image-preview.js"></script>
+        <script type="text/javascript" src="./libraries/filepond/filepond.js"></script>
+        <script type="text/javascript" src="./libraries/filepond/filepond-plugin-image-preview.min.js"></script>
+        <script type="text/javascript" src="./libraries/filepond/filepond.jquery.js"></script>
+        <script type="text/javascript" src="./libraries/filepond/filepond-plugin-file-validate-type.js"></script>
+        <script type="text/javascript" src="./libraries/filepond/filepond-plugin-image-exif-orientation.js"></script>
+        <script type="text/javascript" src="./libraries/filepond/filepond-plugin-image-crop.js"></script>
+        <script type="text/javascript" src="./libraries/filepond/filepond-plugin-image-resize.js"></script>
+        <script type="text/javascript" src="./libraries/filepond/filepond-plugin-image-transform.js"></script>
+        <script type="text/javascript" src="./libraries/filepond/filepond-plugin-image-edit.js"></script>
     </body>
 </html>
