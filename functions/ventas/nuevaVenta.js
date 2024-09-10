@@ -39,7 +39,11 @@ function dataVenta() {
                                         preloader.hide();
                                     } else {
                                         result.forEach((data, index) => {
-                                            html2 += `<option value="${data.ID}" data_Flagtipo = "${data.Flagtipo}" data_codigo = "${data.codigo}" data_descripcion = "${data.descripcion}" data_nombre = "${data.nombre}" data_precioVenta = "${data.precioVenta}" data_stockReal = "${data.stockReal}">
+                                            let descuento = 0;
+                                            if (data.fechaInicio <= getDateActual() && data.fechaFin >= getDateActual()) {
+                                                descuento = (Number(data.porcentaje) * data.precioVenta) / 100;
+                                            }
+                                            html2 += `<option value="${data.ID}" data_descuento="${descuento}" data_Flagtipo = "${data.Flagtipo}" data_codigo = "${data.codigo}" data_descripcion = "${data.descripcion}" data_nombre = "${data.nombre}" data_precioVenta = "${data.precioVenta}" data_stockReal = "${data.stockReal}">
                                                 ${data.codigo} - ${data.nombre}
                                             </option>`;
                                         });
@@ -95,6 +99,7 @@ function confirmarAgregarProducto() {
         let nombre = String($("#productos").find(":selected").attr("data_nombre"));
         let precioVenta = String($("#productos").find(":selected").attr("data_precioVenta"));
         let stockReal = String($("#productos").find(":selected").attr("data_stockReal"));
+        let descuento = Number($("#productos").find(":selected").attr("data_descuento"));
 
         Swal.fire({
             title: "",
@@ -115,6 +120,8 @@ function confirmarAgregarProducto() {
                             <input type="hidden" id="${random}_costo" value="${Number(precioVenta).toFixed(2)}">
                             <input type="hidden" id="${random}_FKProducto" value="${IDproducto}">
                             <input type="hidden" id="${random}_Flagtipo" value="${Flagtipo}">
+                            <input type="hidden" id="${random}_descuento" value="${descuento}">
+
                             <div>
                                 <span class="capitalize" id="${random}_FlagProducto">${nombre}</span>
                                 <p class="capitalize">${Flagtipo}</p>
@@ -133,6 +140,8 @@ function confirmarAgregarProducto() {
                             <div class="buttom-red buttom" onclick="deleteProducto(${random})" style="margin: auto;">
                                 <span class="text-sm mb-0" style="color: inherit;"> <i class="material-icons" style="margin-left: 0px;"> delete </i></span>
                             </div>
+                        </div>
+                        <div id="${random}_productDescuento">
                         </div>
                         <hr>
                     </div>
@@ -251,6 +260,15 @@ function addACuenta(ID) {
     $("#" + random + "_label").text(cantidadActual);
     $("#" + random + "_total").text("$" + Number(costoProducto).toFixed(2));
 
+    let descuentos = Number(String($("#" + random + "_descuento").val()).replace("_descuento", "")).toFixed(2);
+    if (descuentos != 0) {
+        descuentos = Number(Number(descuentos) * cantidadActual);
+        $(`#${random}_productDescuento`).html(`
+            <div class="descuentosProductos" style="text-align: end;">
+                <span class="price small my-auto" style="color: #FF0037;margin-right: 20px;">- $${Number(descuentos).toFixed(2)}</span>
+            </div>
+        `);
+    }
     obtenerTotal();
 }
 
@@ -265,6 +283,17 @@ function removeACuenta(ID) {
         costoProducto = Number(Number(costoProducto) * cantidadActual);
         $("#" + random + "_label").text(cantidadActual);
         $("#" + random + "_total").text("$" + Number(costoProducto).toFixed(2));
+
+        let descuentos = Number(String($("#" + random + "_descuento").val()).replace("_descuento", "")).toFixed(2);
+        if (descuentos != 0) {
+            descuentos = Number(Number(descuentos) * cantidadActual);
+            $(`#${random}_productDescuento`).html(`
+            <div class="descuentosProductos" style="text-align: end;">
+                <span class="price small my-auto" style="color: #FF0037;margin-right: 20px;">- $${Number(descuentos).toFixed(2)}</span>
+            </div>
+        `);
+        }
+
         obtenerTotal();
     }
 }
@@ -280,8 +309,22 @@ function obtenerTotal() {
         price = Number(price) + Number(price1);
     });
 
+    let totalDescuentos = 0;
+    let campos1;
+    campos1 = document.querySelectorAll(".descuentosProductos");
+
+    campos1.forEach((campos1) => {
+        let totalDescuentos1 = 0;
+        totalDescuentos1 = String(campos1.innerText).replace("- $", "");
+        totalDescuentos = Number(totalDescuentos) + Number(totalDescuentos1);
+    });
+
+    $("#totalSubtotal").html("<sup>$</sup>" + Number(price).toFixed(2));
+
+    price = Number(price) - Number(totalDescuentos);
     $("#priceTotal").val(price);
     $("#priceTotal_text").html("<sup>$</sup>" + Number(price).toFixed(2));
+    $("#totalDescuentos").html("<sup>$</sup>" + Number(totalDescuentos).toFixed(2));
 }
 
 function deleteProducto(random) {
