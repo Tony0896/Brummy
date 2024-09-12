@@ -79,5 +79,11 @@
             $result_model = $model_mascotas->traerHistorialMascota($data);
             return $result_model;
         }
+
+        function guardarHistoriaMascota( $data ){
+            $model_mascotas = $this->getConexionModelClass();
+            $result_model = $model_mascotas->guardarHistoriaMascota($data);
+            return $result_model;
+        }
     }
 ?>

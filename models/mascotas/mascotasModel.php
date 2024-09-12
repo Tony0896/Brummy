@@ -218,7 +218,7 @@ namespace mascotas\mascotasModel;
 
             $ID = $data['ID'];
 
-            $sql = "SELECT ID, fecha, FK_mascota, nombre, FK_modulo, nombre_modulo, motivo_movimiento FROM historial_mascota WHERE estatus = 1 AND FK_mascota = $ID ORDER BY ID DESC";
+            $sql = "SELECT ID, fecha, FK_mascota, nombre, FK_modulo, nombre_modulo, motivo_movimiento, getMultimedia(ID, 6, 2) as urlImg FROM historial_mascota WHERE estatus = 1 AND FK_mascota = $ID ORDER BY ID DESC";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -438,7 +438,55 @@ namespace mascotas\mascotasModel;
             return $resultJson;
         }
 
-    }
+        function guardarHistoriaMascota($data) {
+            $request_body = file_get_contents('php://input');
 
-    
+            $data = json_decode($request_body , true);
+
+            $db = new ClaseConexionDB\ConexionDB();
+            $conexion = $db->getConectaDB();
+
+            $FK_usuario_up = isset($_SESSION['ID_usuario']) ? $_SESSION['ID_usuario'] : '1';
+            $nombre_usa_mov_up = isset($_SESSION['nombre']) ? $_SESSION['nombre'] : 'app';
+            $apellidop_usa_mov_up = isset($_SESSION['apellidoPaterno']) ? $_SESSION['apellidoPaterno'] : 'app';
+            $apellidom_usa_mov_up = isset($_SESSION['apellidoMaterno']) ? $_SESSION['apellidoMaterno'] : 'app';
+            $redaccion = $data['arr_data']['contenido_comentario'];
+            $FK_mascota = $data['arr_data']['ID_MASCOTA'];
+            $estatus = 1;
+            $FK_cliente = $data['arr_data']['FK_dueno'];
+            $usuario_movimiento = $nombre_usa_mov_up.' '.$apellidop_usa_mov_up.' '.$apellidom_usa_mov_up;
+
+            $sql = "INSERT INTO historial_mascota(fecha, FK_mascota, nombre, FK_modulo, nombre_modulo, motivo_movimiento, FK_usuario_movimiento, usuario_movimiento, FK_registro_accion, fechaCreacion, estatus) 
+            VALUES (current_date(), $FK_mascota, 'nombre', 6, 'Mascotas', '$redaccion', $FK_usuario_up, '$usuario_movimiento', 1, current_timestamp(), 1) ";
+
+            try{
+                $stmt = mysqli_query($conexion, $sql);
+                if($stmt){
+                    $sql = "SELECT ID FROM historial_mascota ORDER BY ID DESC LIMIT 1";
+                    try{
+                        $stmt = mysqli_query($conexion, $sql);
+                        if($stmt){
+                            $rowcount=mysqli_num_rows($stmt);   
+                            if ( $rowcount ) {
+                                while($row = mysqli_fetch_assoc($stmt)) {
+                                    $array[] =$row;
+                                }
+                                $result = array('success' => true, 'result' => $array);
+                            } else{
+                                $result = array('success' => true, 'result' => 'Sin Datos');
+                            }
+                        }
+                    } catch (mysqli_sql_exception $e) { }
+                } else {
+                    $result = array('success' => false, 'result' => 'error_execute_query', "result_query_sql_error"=>"Error no conocido" );
+                }
+            } catch (mysqli_sql_exception $e) {
+                $result = array('success' => false, 'result' => 'error_conection_sql', "result_query_sql_error"=>$e->getMessage() );
+            }
+            
+            mysqli_close( $conexion );
+            $resultJson = json_encode( $result );
+            return $resultJson;
+        }
+    }  
 ?>

@@ -440,10 +440,21 @@ namespace login\loginModel;
             $msj_exist_directory = '';
 
             if ($val_arr_files > 0) {
-                if($IDAccion == 1){
+                if($IDAccion == 1 && $IDModulo == 6){
                     $ruta_mov_file = 'Brummy/images/HPS/Mascotas/Perfil';
                     $motivoMovimiento = 'Foto mascota agregada';
-                    $sql = "UPDATE multimedia SET estatus = 0, motivoMovimiento = 'Foto actualizada' WHERE FKPertenece = $FKPertenece AND IDModulo = $IDModulo AND IDAccion = $IDAccion;";
+                    $motivoMovimiento2 = 'Foto mascota actualizada';
+                } else if($IDAccion == 1 && $IDModulo == 13){
+                    $ruta_mov_file = 'Brummy/images/HPS/PerfilVete/Logo';
+                    $motivoMovimiento = 'Logo agregado';
+                    $motivoMovimiento2 = 'Logo actualizado';
+                } else if($IDAccion == 2 && $IDModulo == 6){
+                    $ruta_mov_file = 'Brummy/images/HPS/Mascotas/Historial';
+                    $motivoMovimiento = 'Logo agregado';
+                    $motivoMovimiento2 = 'Logo actualizado';
+                }
+                if($IDAccion == 1){
+                    $sql = "UPDATE multimedia SET estatus = 0, motivoMovimiento = '$motivoMovimiento2' WHERE FKPertenece = $FKPertenece AND IDModulo = $IDModulo AND IDAccion = $IDAccion;";
                     try{
                         $stmt = mysqli_query($conexion, $sql);
                         if($stmt){
@@ -455,7 +466,7 @@ namespace login\loginModel;
                         $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
                     }
                 }
-
+                
                 for ($i=0; $i < $val_arr_files ; $i++) {
                     $name_inique = "/". uniqid()."_".$ARR_DATA_FORM['data_files'][$i]['name'];
                     if ( move_uploaded_file( $ARR_DATA_FORM['data_files'][$i]['tmp_name'],$_SERVER["DOCUMENT_ROOT"].'/'.$ruta_mov_file.$name_inique) ) {

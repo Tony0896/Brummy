@@ -147,6 +147,13 @@ function traerHistorialMascota(ID) {
                             <li class="rb-item" ng-repeat="itembx">
                                 <div class="timestamp">${volteaFecha(data.fecha, 1)} </div>
                                 <div class="item-title">${data.motivo_movimiento}</div>
+                                ${
+                                    data.urlImg
+                                        ? `<div class="card__avatar" style="width: fit-content;"> 
+                                        <img src="./../../${data.urlImg}" id="fotoMascotaPerfil" onclick="verFotoMultimedia(this.src)">
+                                    </div>`
+                                        : ``
+                                }
                             </li> `;
                         });
                         $("#historialMascotaSpace").html(html);
@@ -504,4 +511,205 @@ function editarFotoMascota(ID) {
         $("#modalTemplate").modal("hide");
         $("#btnClose").off("click");
     });
+}
+
+function crearHistoriaManual() {
+    $("#labelModal").html(`Agregar nuevo Comentario`);
+
+    $("#body_modal").html(`<br>
+        <div id="formMascotas">
+            <div class="coolinput">
+                <label name="Contenido Comentario" for="contenido_comentario" class="text">Contenido Comentario</label>  
+                <textarea name="Contenido Comentario" class="input capitalize obligatorio" id="contenido_comentario" autocomplete="off" maxlength"200"/ cols="30" rows="10"></textarea>  
+                <span><strong class="msj_validacion" id="contenido_comentario_error" ></strong></span>
+            </div>
+
+            <br>
+            <div class="coolinput" style="width: 200px;margin: auto;">
+                <input type="file" class="my-pond" name="filepond" />
+            </div>
+        </div>
+        
+        <div class="center-fitcomponent" style="width: 100%;">
+            <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="PreGuardaHistoriaMascota">
+                <span class="text-sm mb-0 span-buttom">
+                    Guardar
+                    <i class="material-icons"> save </i>
+                </span>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 25px;display:none;">
+            <button type="button" class="btn btn-primary" id="SendFilesHistorial">Save changes</button>
+            <input type="hidden" id="FKPerteneceHistoria">
+        </div>
+
+    `);
+
+    $(function () {
+        // First register any plugins
+        $.fn.filepond.registerPlugin(
+            FilePondPluginFileValidateType,
+            FilePondPluginImageExifOrientation,
+            FilePondPluginImagePreview,
+            FilePondPluginImageCrop,
+            FilePondPluginImageResize,
+            FilePondPluginImageTransform,
+            FilePondPluginImageEdit
+        );
+
+        // Turn input element into a pond
+        $(".my-pond").filepond();
+
+        // Set allowMultiple property to true
+        $(".my-pond").filepond("allowMultiple", false);
+        $(".my-pond").filepond("labelIdle", "Agregar evidencia");
+        $(".my-pond").filepond("imagePreviewHeight", 170);
+        $(".my-pond").filepond("imageCropAspectRatio", "1:1");
+        $(".my-pond").filepond("imageResizeTargetWidth", 200);
+        $(".my-pond").filepond("imageResizeTargetHeight", 200);
+        $(".my-pond").filepond("stylePanelLayout", "circle");
+        $(".my-pond").filepond("styleLoadIndicatorPosition", "center bottom");
+        $(".my-pond").filepond("styleProgressIndicatorPosition", "right bottom");
+        $(".my-pond").filepond("styleButtonRemoveItemPosition", "left bottom");
+        $(".my-pond").filepond("styleButtonProcessItemPosition", "right bottom");
+
+        // Listen for addfile event
+        $(".my-pond").on("FilePond:addfile", function (e) {
+            console.log("file added event", e);
+        });
+
+        // Manually add a file using the addfile method
+        // $(".my-pond")
+        //     .first()
+        //     .filepond("addFile", "index.html")
+        //     .then(function (file) {
+        //         console.log("file added", file);
+        //     });
+
+        $("#PreGuardaHistoriaMascota").click(() => {
+            PreGuardaHistoriaMascota();
+        });
+
+        $("#SendFilesHistorial").click(() => {
+            let formData = new FormData();
+            // append files array into the form data
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                for (var i = 0; i < pondFiles.length; i++) {
+                    formData.append("Adjunto_" + i, pondFiles[i].file);
+                }
+                formData.append("NoDocs", pondFiles.length);
+                formData.append("FKPertenece", $("#FKPerteneceHistoria").val());
+                formData.append("IDModulo", 6);
+                formData.append("IDAccion", 2);
+                formData.append("NombreModulo", "Mascotas");
+                formData.append("fechaRegistro", moment().format("YYYY-MM-DD"));
+                formData.append("fechaRegistroH", moment().format("YYYY-MM-DDTHH:mm:ss"));
+
+                $.ajax({
+                    url: "views/login/guardaDocs.php",
+                    type: "POST",
+                    data: formData,
+                    dataType: "JSON",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function (data) {
+                        let response = Number(data);
+                        if (response) {
+                            if (response > 0) {
+                                $(".my-pond").filepond("removeFiles");
+                                $("#modalTemplate").modal("hide");
+                                $("#btnClose").off("click");
+                                const ID_MASCOTA = localStorage.getItem("IDMascota");
+                                traerHistorialMascota(ID_MASCOTA);
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    },
+                });
+            }
+        });
+    });
+
+    $("#modalTemplate").modal({
+        backdrop: "static",
+        keyboard: false,
+    });
+
+    $("#modalTemplate").modal("show");
+
+    $("#btnClose").on("click", () => {
+        $("#modalTemplate").modal("hide");
+        $("#btnClose").off("click");
+    });
+}
+
+function PreGuardaHistoriaMascota() {
+    const ID_MASCOTA = localStorage.getItem("IDMascota");
+    const FK_dueno = localStorage.getItem("FK_dueno");
+    const contenido_comentario = $("#contenido_comentario").val();
+
+    if (!contenido_comentario) {
+        msj.show("Aviso", "Debes agregar un comentario para poder guardar.", [{ text1: "OK" }]);
+        return false;
+    }
+
+    let arr_data = {
+        ID_MASCOTA: ID_MASCOTA,
+        contenido_comentario: contenido_comentario,
+        FK_dueno: FK_dueno,
+    };
+
+    preloader.show();
+
+    axios
+        .post("./views/mascotas/guardarHistoriaMascota.php", { arr_data: arr_data })
+        .then((response) => {
+            if (response.status == 200) {
+                let success = response.data.success;
+                let result = response.data.result;
+
+                switch (success) {
+                    case true:
+                        let FKPerteneceHistoria;
+                        if (result == "Sin Datos") {
+                        } else {
+                            result.forEach((data, index) => {
+                                FKPerteneceHistoria = data.ID;
+                            });
+                            $("#FKPerteneceHistoria").val(FKPerteneceHistoria);
+                            msj.show("Aviso", "Guardado correctamente", [{ text1: "OK" }]);
+                            preloader.hide();
+                            $("#modalTemplate").modal("hide");
+                            let formData = new FormData();
+                            // append files array into the form data
+                            pondFiles = $(".my-pond").filepond("getFiles");
+                            if (pondFiles.length > 0) {
+                            } else {
+                                traerHistorialMascota(ID_MASCOTA);
+                            }
+
+                            $("#SendFilesHistorial").trigger("click");
+                        }
+                        break;
+                    case false:
+                        preloader.hide();
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                        break;
+                }
+            }
+        })
+        .catch((error) => {
+            preloader.hide();
+            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+            // console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+            console.error("Ocurrio un error : " + error);
+        })
+        .finally(() => {
+            // siempre se ejecuta
+        });
 }

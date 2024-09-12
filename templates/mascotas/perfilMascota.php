@@ -136,27 +136,9 @@
                     <div class="card-body">
                         <div class="divNotas">
                             <h4 class="card-title">Historial</h4>
-                            <div class="buttom-green buttom dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="margin:0; height: fit-content;margin-right: 15px;">
-                                <span class="text-sm mb-0">Filtrar <i class="material-icons"> filter_alt </i></span>
+                            <div class="buttom-green buttom" onclick="crearHistoriaManual()" style="margin:0; height: fit-content;margin-right: 15px;">
+                                <span class="text-sm mb-0">Crear <i class="material-icons"> add_circle </i></span>
                             </div>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <div id="div_cbox_1">
-                                            <input class="form-check-input" type="checkbox" id="cbox_1" onchange="cambioTablero(this.id)" checked="">
-                                            <label id="label_cbox_1" class="form-check-label" for="cbox_1">✔ &emsp; Taller Interno</label>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <div id="div_cbox_2">
-                                            <input class="form-check-input" type="checkbox" id="cbox_2" onchange="cambioTablero(this.id)" checked="">
-                                            <label id="label_cbox_2" class="form-check-label" for="cbox_2">✔ &emsp; Taller Externo </label>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
                         </div>
                         
                         <div class="rb-container" style="max-height: 500px; overflow-y: scroll;padding-top: 15px;pointer-events: all;padding-left: 15px; text-align: center;">

@@ -61,8 +61,13 @@ function obtenerDataVeterinaria() {
                             municipio = data.municipio ? data.municipio : "";
                             numero = data.numero ? data.numero : "";
                             pais = data.pais ? data.pais : "";
-                            urlLogo = data.urlLogo ? data.urlLogo : "";
+                            urlLogo = data.urlImg ? data.urlImg : "";
                         });
+                        if (urlLogo) {
+                            $("#logoVeterinaria").attr("src", `./../../${urlLogo}`);
+                        } else {
+                            $("#logoVeterinaria").attr("src", `./../../Brummy/images/default.png`);
+                        }
                         $("#nombreVete_span").html(nombreVete);
                         let directionCompleta = calle ? `${calle} ${numero}, ${cp} ${col}, ${municipio} ${estado}` : "";
                         $("#direccionVete_span").html(directionCompleta);
@@ -959,4 +964,168 @@ function deleteRedesSocialesVete(ID) {
                 });
         }
     });
+}
+
+function editarLogoEmpresa(ID) {
+    $("#labelModal").html(`Editar Logo`);
+    $("#body_modal").html(`<br>
+        <div id="formLogo">
+            <div class="coolinput" style="width: 200px;margin: auto;">
+                <input type="file" class="my-pond" name="filepond" />
+            </div>
+            
+            <div class="center-fitcomponent" style="width: 100%;">
+                <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="actualizarLogoEmpresa">
+                    <span class="text-sm mb-0 span-buttom">
+                        Guardar
+                        <i class="material-icons"> save </i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 25px;display:none;">
+                <button type="button" class="btn btn-primary" id="SendFilesLogo">Save changes</button>
+                <input type="hidden" id="FKEmpresa" value="${ID}">
+            </div>
+
+        </div>
+    `);
+
+    $(function () {
+        // First register any plugins
+        $.fn.filepond.registerPlugin(
+            FilePondPluginFileValidateType,
+            FilePondPluginImageExifOrientation,
+            FilePondPluginImagePreview,
+            FilePondPluginImageCrop,
+            FilePondPluginImageResize,
+            FilePondPluginImageTransform,
+            FilePondPluginImageEdit
+        );
+
+        // Turn input element into a pond
+        $(".my-pond").filepond();
+
+        // Set allowMultiple property to true
+        $(".my-pond").filepond("allowMultiple", false);
+        $(".my-pond").filepond("labelIdle", "Agregar Logo Veterinaria");
+        $(".my-pond").filepond("imagePreviewHeight", 170);
+        $(".my-pond").filepond("allowImageCrop", true);
+        $(".my-pond").filepond("imageCropAspectRatio", "1:1");
+        $(".my-pond").filepond("imageResizeTargetWidth", 200);
+        $(".my-pond").filepond("imageResizeTargetHeight", 200);
+        $(".my-pond").filepond("stylePanelLayout", "circle");
+        $(".my-pond").filepond("styleLoadIndicatorPosition", "center bottom");
+        $(".my-pond").filepond("styleProgressIndicatorPosition", "right bottom");
+        $(".my-pond").filepond("styleButtonRemoveItemPosition", "left bottom");
+        $(".my-pond").filepond("styleButtonProcessItemPosition", "right bottom");
+
+        // Listen for addfile event
+        $(".my-pond").on("FilePond:addfile", function (e) {
+            console.log("file added event", e);
+        });
+
+        $("#actualizarLogoEmpresa").click(() => {
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                $("#SendFilesLogo").trigger("click");
+            } else {
+                msj.show("Aviso", "Aún no hay foto.", [{ text1: "OK" }]);
+            }
+        });
+
+        $("#SendFilesLogo").click(() => {
+            let formData = new FormData();
+            // append files array into the form data
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                for (var i = 0; i < pondFiles.length; i++) {
+                    formData.append("Adjunto_" + i, pondFiles[i].file);
+                }
+                formData.append("NoDocs", pondFiles.length);
+                formData.append("FKPertenece", $("#FKEmpresa").val());
+                formData.append("IDModulo", 13);
+                formData.append("IDAccion", 1);
+                formData.append("NombreModulo", "Perfil Veterinaria");
+                formData.append("fechaRegistro", moment().format("YYYY-MM-DD"));
+                formData.append("fechaRegistroH", moment().format("YYYY-MM-DDTHH:mm:ss"));
+
+                $.ajax({
+                    url: "views/login/guardaDocs.php",
+                    type: "POST",
+                    data: formData,
+                    dataType: "JSON",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function (data) {
+                        let response = Number(data);
+                        if (response) {
+                            if (response > 0) {
+                                obtenerLogoVete();
+                                $(".my-pond").filepond("removeFiles");
+                                $("#modalTemplate").modal("hide");
+                                $("#btnClose").off("click");
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    },
+                });
+            }
+        });
+    });
+
+    $("#modalTemplate").modal({
+        backdrop: "static",
+        keyboard: false,
+    });
+
+    $("#modalTemplate").modal("show");
+
+    $("#btnClose").on("click", () => {
+        $("#modalTemplate").modal("hide");
+        $("#btnClose").off("click");
+    });
+}
+
+function obtenerLogoVete() {
+    $.ajax({
+        method: "POST",
+        dataType: "JSON",
+        url: "./views/store/obtenerDataVeterinaria.php",
+        data: {},
+    })
+        .done(function (results) {
+            let success = results.success;
+            let result = results.result;
+            switch (success) {
+                case true:
+                    if (result == "Sin Datos") {
+                        preloader.hide();
+                    } else {
+                        let urlLogo;
+                        result.forEach((data, index) => {
+                            urlLogo = data.urlImg ? data.urlImg : "";
+                        });
+
+                        if (urlLogo) {
+                            $("#logoVeterinaria").attr("src", `./../../${urlLogo}`);
+                        } else {
+                            $("#logoVeterinaria").attr("src", `./../../Brummy/images/default.png`);
+                        }
+                    }
+                    break;
+                case false:
+                    preloader.hide();
+                    msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    break;
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            preloader.hide();
+            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+            console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+        });
 }

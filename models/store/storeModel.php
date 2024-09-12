@@ -12,7 +12,7 @@ namespace store\storeModel;
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $sql = "SELECT * FROM perfil_veterinaria WHERE estatus = 1 AND ID = {$empresa}";
+            $sql = "SELECT *, getMultimedia(ID, 13, 1) as urlImg FROM perfil_veterinaria WHERE estatus = 1 AND ID = {$empresa}";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
