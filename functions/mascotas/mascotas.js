@@ -38,6 +38,15 @@ function obtenerMascotas() {
                             html += `<tr>
                                 <td> ${index + 1} </td>
                                 <td> <span class="material-icons" style="font-size: 18px;color: ${temperamento}"> fiber_manual_record </span> </td>
+                                <td>
+                                    <div class="card__avatar"> 
+                                    ${
+                                        data.urlImg
+                                            ? `<img src="./../../${data.urlImg}" alt="" onclick="verFotoMultimedia(this.src)"> `
+                                            : `<img src="./../../Brummy/images/default.png" alt="" >`
+                                    }    
+                                    </div>
+                                </td>
                                 <td class="capitalize"> 
                                     <div> 
                                         <div><span>${data.nombre}</span></div> 
@@ -55,9 +64,8 @@ function obtenerMascotas() {
                             }</div> </div></td>
                                 <td>
                                     <div style="display: flex; flex-direction: row;">
-                                        <div class="buttom-blue buttom button-sinText mx-1" title="Ver Perfil" onclick="verMascota(${data.ID} , ${
-                                data.FK_dueno
-                            })">
+                                        <div class="buttom-blue buttom button-sinText mx-1" title="Ver Perfil" 
+                                            onclick="verMascota(${data.ID} , ${data.FK_dueno})">
                                             <span class="text-sm mb-0"><i class="material-icons"> pets </i></span>
                                         </div>
                                     </div>
@@ -129,7 +137,7 @@ function crearMascota() {
 
                                                     <div class="coolinput">
                                                         <label name="Fecha Nacimiento" for="fechaMascota" class="text">Fecha Nacimiento</label>    
-                                                        <input name="Fecha Nacimiento" type="date" class="input obligatorio" id="fechaMascota" autocomplete="off" maxlength"50"/>
+                                                        <input name="Fecha Nacimiento" type="text" class="input obligatorio" id="fechaMascota" autocomplete="off" maxlength"50"/>
                                                     </div>
 
                                                     <div class="coolinput">
@@ -191,7 +199,7 @@ function crearMascota() {
                                                         </div>
                                                     </div>
 
-                                                    div class="row" style="margin-bottom: 25px;display:none;">
+                                                    <div class="row" style="margin-bottom: 25px;display:none;">
                                                         <button type="button" class="btn btn-primary" id="SendFiles">Save changes</button>
                                                         <input type="hidden" id="FKMascotaResponse">
                                                     </div>
@@ -245,7 +253,20 @@ function crearMascota() {
                                                     if (pondFiles.length > 0) {
                                                         guardarMascota();
                                                     } else {
-                                                        msj.show("Aviso", "Aún no tienes una imagen de la mascota.", [{ text1: "OK" }]);
+                                                        Swal.fire({
+                                                            title: "",
+                                                            text: "Aún no tienes una imagen de la mascota. ¿Deseas continuar?",
+                                                            icon: "question",
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: "#7066e0",
+                                                            cancelButtonColor: "#FF0037",
+                                                            confirmButtonText: "OK",
+                                                            cancelButtonText: "Cancelar",
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                guardarMascota();
+                                                            }
+                                                        });
                                                     }
                                                 });
 
@@ -274,15 +295,19 @@ function crearMascota() {
                                                             cache: false,
                                                             processData: false,
                                                             success: function (data) {
-                                                                //    todo the logic
-                                                                // remove the files from filepond, etc
+                                                                let response = Number(data);
+                                                                if (response) {
+                                                                    if (response > 0) {
+                                                                        $(".my-pond").filepond("removeFiles");
+                                                                        $("#modalTemplate").modal("hide");
+                                                                        $("#btnClose").off("click");
+                                                                    }
+                                                                }
                                                             },
                                                             error: function (data) {
-                                                                //    todo the logic
+                                                                msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
                                                             },
                                                         });
-                                                    } else {
-                                                        msj.show("Aviso", "Aún no tienes una imagen de la mascota.", [{ text1: "OK" }]);
                                                     }
                                                 });
                                             });
@@ -291,6 +316,8 @@ function crearMascota() {
                                                 backdrop: "static",
                                                 keyboard: false,
                                             });
+
+                                            $("#fechaMascota").duDatepicker({ format: "dd-mm-yyyy", clearBtn: true, cancelBtn: true });
 
                                             $("#modalTemplate").modal("show");
 
@@ -342,7 +369,7 @@ function guardarMascota() {
     let valido = values.valido;
     if (valido) {
         let nombre = String($("#nombreMascota").val());
-        let fechaNacimiento = String($("#fechaMascota").val());
+        let fechaNacimiento = volteaFecha(String($("#fechaMascota").val()), 2);
         let FK_especie = String($("#relacionEspecie").find(":selected").attr("FK_especie"));
         let especie = String($("#relacionEspecie").find(":selected").attr("especie"));
         let raza = String($("#relacionEspecie").find(":selected").attr("raza"));

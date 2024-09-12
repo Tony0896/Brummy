@@ -443,6 +443,17 @@ namespace login\loginModel;
                 if($IDAccion == 1){
                     $ruta_mov_file = 'Brummy/images/HPS/Mascotas/Perfil';
                     $motivoMovimiento = 'Foto mascota agregada';
+                    $sql = "UPDATE multimedia SET estatus = 0, motivoMovimiento = 'Foto actualizada' WHERE FKPertenece = $FKPertenece AND IDModulo = $IDModulo AND IDAccion = $IDAccion;";
+                    try{
+                        $stmt = mysqli_query($conexion, $sql);
+                        if($stmt){
+                            
+                        } else {
+                            $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
+                        }
+                    } catch (mysqli_sql_exception $e) {
+                        $result = array('success' => false, 'result' => false, "result_query_sql_error"=>$e->getMessage() );
+                    }
                 }
 
                 for ($i=0; $i < $val_arr_files ; $i++) {

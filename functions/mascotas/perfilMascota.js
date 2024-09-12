@@ -32,7 +32,7 @@ function verPerfilMascota(ID) {
                         Swal.fire({ icon: "warning", title: "Sin datos.", text: "" });
                     } else {
                         result.forEach((data, index) => {
-                            // console.table(data);
+                            // console.table("dataMascota =>", data);
                             nombreMascota = data.nombre;
                             fechaMascota = data.fechaNacimiento;
                             relacionEspecie = `${data.especie} - ${data.raza}`;
@@ -40,18 +40,26 @@ function verPerfilMascota(ID) {
                             colorMascota = data.color ? data.color : tdSinData;
                             rasgosMascota = data.rasgosParticulares ? data.rasgosParticulares : tdSinData;
                             FK_dueno = data.NombreCliente;
+                            urlImg = data.urlImg ? data.urlImg : "";
                         });
                         traerHistorialMascota(ID);
-                        $("#nombreMascota").html(nombreMascota);
-                        $("#fechaMascota").html(fechaMascota);
-                        $("#relacionEspecie").html(relacionEspecie);
-                        $("#sexoMascota").html(sexoMascota);
-                        $("#colorMascota").html(colorMascota);
-                        $("#rasgosMascota").html(rasgosMascota);
-                        $("#FK_dueno").html(FK_dueno);
+                        $("#nombreMascota_perf").html(nombreMascota);
+                        $("#fechaMascota_perf").html(fechaMascota);
+                        $("#relacionEspecie_perf").html(relacionEspecie);
+                        $("#sexoMascota_perf").html(sexoMascota);
+                        $("#colorMascota_perf").html(colorMascota);
+                        $("#rasgosMascota_perf").html(rasgosMascota);
+                        $("#FK_dueno_perf").html(FK_dueno);
+
+                        if (urlImg) {
+                            $("#fotoMascotaPerfil").attr("src", `./../../${urlImg}`);
+                        } else {
+                            $("#fotoMascotaPerfil").attr("src", `./../../Brummy/images/default.png`);
+                        }
+
                         // mostramos el boton con la informacion de la mascota
                         btn_edit_mascota = `
-                        <div class="buttom-blue buttom" onclick='editarMascota(${JSON.stringify( result)});'>
+                        <div class="buttom-blue buttom" onclick='editarMascota(${JSON.stringify(result)});'>
                             <span class="text-sm mb-0 span-buttom"> 
                                 Editar
                                 <i class="material-icons"> edit </i>
@@ -158,8 +166,7 @@ function traerHistorialMascota(ID) {
         });
 }
 
-function editarMascota(data_mascota) { 
-
+function editarMascota(data_mascota) {
     preloader.show();
 
     $.ajax({
@@ -177,10 +184,14 @@ function editarMascota(data_mascota) {
                     } else {
                         let html2 = "";
                         let attr_selected_especie = "";
-                        let templates_sexo_animal = (data_mascota[0]['sexo'] == 'Macho') ? `<option value="Macho" selected>Macho</option> <option value="Hembra">Hembra</option>` : `<option value="Macho">Macho</option> <option value="Hembra" selected>Hembra</option>`;
-                        
+                        let templates_sexo_animal =
+                            data_mascota[0]["sexo"] == "Macho"
+                                ? `<option value="Macho" selected>Macho</option> <option value="Hembra">Hembra</option>`
+                                : `<option value="Macho">Macho</option> <option value="Hembra" selected>Hembra</option>`;
+
                         result2.forEach((data2, index) => {
-                            attr_selected_especie = ((data2.especie == data_mascota[0]['especie']) && (data2.nombreRaza == data_mascota[0]['raza'])) ? 'selected' : '';
+                            attr_selected_especie =
+                                data2.especie == data_mascota[0]["especie"] && data2.nombreRaza == data_mascota[0]["raza"] ? "selected" : "";
                             html2 += `<option value="${data2.ID}" FK_especie="${data2.FK_especie}" especie="${data2.especie}" raza="${data2.nombreRaza}" ${attr_selected_especie} >${data2.especie} - ${data2.nombreRaza}</option>`;
                         });
                         $.ajax({
@@ -199,7 +210,7 @@ function editarMascota(data_mascota) {
                                             let html3 = "";
                                             let attr_selected_dueno = "";
                                             result3.forEach((data3, index) => {
-                                                attr_selected_dueno = (data3.ID == data_mascota[0]['FK_dueno']) ? 'selected' : '';
+                                                attr_selected_dueno = data3.ID == data_mascota[0]["FK_dueno"] ? "selected" : "";
                                                 html3 += `<option value="${data3.ID}" ${attr_selected_dueno}>${data3.nombre} ${data3.apellidoP} ${data3.apellidoM}</option>`;
                                             });
                                             $("#labelModal").html(`Editar Datos Mascota`);
@@ -208,12 +219,12 @@ function editarMascota(data_mascota) {
                                                 <div id="formMascotas">
                                                     <div class="coolinput">
                                                         <label name="Nombre Mascota" for="editNombreMascota" class="text">Nombre Mascota</label>    
-                                                        <input name="Nombre Mascota" type="text" class="input capitalize obligatorio" id="editNombreMascota" autocomplete="off" maxlength"50"/ value ='${data_mascota[0]['nombre']}'>
+                                                        <input name="Nombre Mascota" type="text" class="input capitalize obligatorio" id="editNombreMascota" autocomplete="off" maxlength"50"/ value ='${data_mascota[0]["nombre"]}'>
                                                     </div>
 
                                                     <div class="coolinput">
                                                         <label name="Fecha Nacimiento" for="editFechaMascota" class="text">Fecha Nacimiento</label>    
-                                                        <input name="Fecha Nacimiento" type="date" class="input obligatorio" id="editFechaMascota" autocomplete="off" maxlength"50"/ value ='${data_mascota[0]['fechaNacimiento']}'>
+                                                        <input name="Fecha Nacimiento" type="date" class="input obligatorio" id="editFechaMascota" autocomplete="off" maxlength"50"/ value ='${data_mascota[0]["fechaNacimiento"]}'>
                                                     </div>
 
                                                     <div class="coolinput">
@@ -234,12 +245,12 @@ function editarMascota(data_mascota) {
 
                                                     <div class="coolinput">
                                                         <label name="Color Mascota" for="editColorMascota" class="text">Color Mascota</label>    
-                                                        <input type="text" class="input capitalize" id="editColorMascota" autocomplete="off" maxlength"50"/ value ='${data_mascota[0]['color']}'> 
+                                                        <input type="text" class="input capitalize" id="editColorMascota" autocomplete="off" maxlength"50"/ value ='${data_mascota[0]["color"]}'> 
                                                     </div>
 
                                                     <div class="coolinput">
                                                         <label name="Rasgos Particulares" for="editRasgosMascota" class="text">Rasgos Particulares</label>    
-                                                        <input type="text" class="input capitalize" id="editRasgosMascota" autocomplete="off" maxlength"50"/ value ='${data_mascota[0]['rasgosParticulares']}'>
+                                                        <input type="text" class="input capitalize" id="editRasgosMascota" autocomplete="off" maxlength"50"/ value ='${data_mascota[0]["rasgosParticulares"]}'>
                                                     </div>
 
                                                     <div class="coolinput">
@@ -319,59 +330,178 @@ function editarMascota(data_mascota) {
             msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
             console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
         });
-
 }
 
-function guardarEdicionMascota() { 
-
+function guardarEdicionMascota() {
     preloader.show();
 
     let arr_data = {
-        ID : localStorage.getItem("IDMascota"),
-        editNombreMascota : $("#editNombreMascota").val(),
-        editFechaMascota : $("#editFechaMascota").val(),
-        raza : String($("#editRelacionEspecie").find(":selected").attr("raza")),
-        especie : String($("#editRelacionEspecie").find(":selected").attr("especie")),
-        FK_especie : String($("#editRelacionEspecie").find(":selected").attr("FK_especie")),
-        FK_raza : $("#editRelacionEspecie").val(),
-        editSexoMascota : $("#editSexoMascota").val(),
-        editColorMascota : $("#editColorMascota").val(),
-        editRasgosMascota : $("#editRasgosMascota").val(),
-        Edit_FK_dueno : $("#Edit_FK_dueno").val(),
-    }
+        ID: localStorage.getItem("IDMascota"),
+        editNombreMascota: $("#editNombreMascota").val(),
+        editFechaMascota: $("#editFechaMascota").val(),
+        raza: String($("#editRelacionEspecie").find(":selected").attr("raza")),
+        especie: String($("#editRelacionEspecie").find(":selected").attr("especie")),
+        FK_especie: String($("#editRelacionEspecie").find(":selected").attr("FK_especie")),
+        FK_raza: $("#editRelacionEspecie").val(),
+        editSexoMascota: $("#editSexoMascota").val(),
+        editColorMascota: $("#editColorMascota").val(),
+        editRasgosMascota: $("#editRasgosMascota").val(),
+        Edit_FK_dueno: $("#Edit_FK_dueno").val(),
+    };
 
     axios
-    .post( './views/mascotas/guardarEdicionMascota.php' , {arr_data : arr_data})
-    .then((response) => {
+        .post("./views/mascotas/guardarEdicionMascota.php", { arr_data: arr_data })
+        .then((response) => {
+            if (response.status == 200) {
+                let success = response.data.success;
+                let result = response.data.result;
 
-        if (response.status == 200) {
-            let success = response.data.success;
-            let result = response.data.result;
-
-            switch (success) {
-                case true:
-                    if (result == "Sin Datos") {
-                    } else {
-                        msj.show("Aviso", "Se Edito los datos correctamente", [{ text1: "OK" }]);
+                switch (success) {
+                    case true:
+                        if (result == "Sin Datos") {
+                        } else {
+                            msj.show("Aviso", "Se Edito los datos correctamente", [{ text1: "OK" }]);
+                            preloader.hide();
+                            $("#modalTemplate").modal("hide");
+                            verPerfilMascota(localStorage.getItem("IDMascota"));
+                        }
+                        break;
+                    case false:
                         preloader.hide();
-                        $("#modalTemplate").modal("hide");
-                        verPerfilMascota(localStorage.getItem("IDMascota"));
-                    }
-                    break;
-                case false:
-                    preloader.hide();
-                    msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
-                    break;
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                        break;
+                }
             }
-        }
+        })
+        .catch((error) => {
+            preloader.hide();
+            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+            // console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+            console.error("Ocurrio un error : " + error);
+        })
+        .finally();
+}
 
-    })
-    .catch((error) => {
-        preloader.hide();
-        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
-        // console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
-        console.error("Ocurrio un error : " + error);
-    })
-    .finally()
+function editarFotoMascota(ID) {
+    $("#labelModal").html(`Editar foto Mascota`);
+    $("#body_modal").html(`<br>
+        <div id="formMascotas">
+            <div class="coolinput" style="width: 200px;margin: auto;">
+                <input type="file" class="my-pond" name="filepond" />
+            </div>
+            
+            <div class="center-fitcomponent" style="width: 100%;">
+                <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="actualizarFotoMascota">
+                    <span class="text-sm mb-0 span-buttom">
+                        Guardar
+                        <i class="material-icons"> save </i>
+                    </span>
+                </div>
+            </div>
 
+            <div class="row" style="margin-bottom: 25px;display:none;">
+                <button type="button" class="btn btn-primary" id="SendFiles">Save changes</button>
+                <input type="hidden" id="FKMascotaResponsePerfil" value="${ID}">
+            </div>
+
+        </div>
+    `);
+
+    $(function () {
+        // First register any plugins
+        $.fn.filepond.registerPlugin(
+            FilePondPluginFileValidateType,
+            FilePondPluginImageExifOrientation,
+            FilePondPluginImagePreview,
+            FilePondPluginImageCrop,
+            FilePondPluginImageResize,
+            FilePondPluginImageTransform,
+            FilePondPluginImageEdit
+        );
+
+        // Turn input element into a pond
+        $(".my-pond").filepond();
+
+        // Set allowMultiple property to true
+        $(".my-pond").filepond("allowMultiple", false);
+        $(".my-pond").filepond("labelIdle", "Agregar Imagen mascota");
+        $(".my-pond").filepond("imagePreviewHeight", 170);
+        $(".my-pond").filepond("allowImageCrop", true);
+        $(".my-pond").filepond("imageCropAspectRatio", "1:1");
+        $(".my-pond").filepond("imageResizeTargetWidth", 200);
+        $(".my-pond").filepond("imageResizeTargetHeight", 200);
+        $(".my-pond").filepond("stylePanelLayout", "circle");
+        $(".my-pond").filepond("styleLoadIndicatorPosition", "center bottom");
+        $(".my-pond").filepond("styleProgressIndicatorPosition", "right bottom");
+        $(".my-pond").filepond("styleButtonRemoveItemPosition", "left bottom");
+        $(".my-pond").filepond("styleButtonProcessItemPosition", "right bottom");
+
+        // Listen for addfile event
+        $(".my-pond").on("FilePond:addfile", function (e) {
+            console.log("file added event", e);
+        });
+
+        $("#actualizarFotoMascota").click(() => {
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                $("#SendFiles").trigger("click");
+            } else {
+                msj.show("Aviso", "Aún no hay foto.", [{ text1: "OK" }]);
+            }
+        });
+
+        $("#SendFiles").click(() => {
+            let formData = new FormData();
+            // append files array into the form data
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                for (var i = 0; i < pondFiles.length; i++) {
+                    formData.append("Adjunto_" + i, pondFiles[i].file);
+                }
+                formData.append("NoDocs", pondFiles.length);
+                formData.append("FKPertenece", $("#FKMascotaResponsePerfil").val());
+                formData.append("IDModulo", 6);
+                formData.append("IDAccion", 1);
+                formData.append("NombreModulo", "Mascotas");
+                formData.append("fechaRegistro", moment().format("YYYY-MM-DD"));
+                formData.append("fechaRegistroH", moment().format("YYYY-MM-DDTHH:mm:ss"));
+
+                $.ajax({
+                    url: "views/login/guardaDocs.php",
+                    type: "POST",
+                    data: formData,
+                    dataType: "JSON",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function (data) {
+                        let response = Number(data);
+                        if (response) {
+                            if (response > 0) {
+                                verPerfilMascota(localStorage.getItem("IDMascota"));
+                                $(".my-pond").filepond("removeFiles");
+                                $("#modalTemplate").modal("hide");
+                                $("#btnClose").off("click");
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    },
+                });
+            }
+        });
+    });
+
+    $("#modalTemplate").modal({
+        backdrop: "static",
+        keyboard: false,
+    });
+
+    $("#modalTemplate").modal("show");
+
+    $("#btnClose").on("click", () => {
+        $("#modalTemplate").modal("hide");
+        $("#btnClose").off("click");
+    });
 }

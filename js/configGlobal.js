@@ -427,3 +427,8 @@ function dataTableDestroyClass(classname) {
         .DataTable()
         .destroy();
 }
+
+function verFotoMultimedia(src) {
+    $("#imgModalLogo").attr("src", src);
+    $("#staticBackdrop").modal("show");
+}

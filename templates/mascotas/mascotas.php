@@ -24,6 +24,7 @@
                         <tr>
                             <th>#</th>
                             <th></th>
+                            <th></th>
                             <th>Mascota</th>
                             <th>Dueño</th>
                             <th>Fecha N.</th>

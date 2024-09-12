@@ -27,7 +27,7 @@ namespace mascotas\mascotasModel;
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $sql = "SELECT ms.*, CONCAT(cl.nombre, ' ' ,cl.apellidoP, ' ' ,cl.apellidoM) as NombreCliente FROM mascotas ms LEFT JOIN clientes cl ON cl.ID = ms.FK_dueno WHERE ms.estatus = 1";
+            $sql = "SELECT ms.*, CONCAT(cl.nombre, ' ' ,cl.apellidoP, ' ' ,cl.apellidoM) as NombreCliente, getMultimedia(ms.ID, 6, 1) as urlImg FROM mascotas ms LEFT JOIN clientes cl ON cl.ID = ms.FK_dueno WHERE ms.estatus = 1";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -123,7 +123,7 @@ namespace mascotas\mascotasModel;
 
             $ID = $data['ID'];
 
-            $sql = "SELECT ms.*, CONCAT(cl.nombre, ' ' ,cl.apellidoP, ' ' ,cl.apellidoM) as NombreCliente FROM mascotas ms LEFT JOIN clientes cl ON cl.ID = ms.FK_dueno WHERE ms.estatus = 1 AND ms.ID = $ID";
+            $sql = "SELECT ms.*, CONCAT(cl.nombre, ' ' ,cl.apellidoP, ' ' ,cl.apellidoM) as NombreCliente, getMultimedia(ms.ID, 6, 1) as urlImg FROM mascotas ms LEFT JOIN clientes cl ON cl.ID = ms.FK_dueno WHERE ms.estatus = 1 AND ms.ID = $ID";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){

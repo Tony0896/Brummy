@@ -90,6 +90,20 @@ if( !$boolean_session ){
                 </div>
             </div>
         </div>
+
+        <div class="modal fade zoom" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: #009071;">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="padding: 10px;font-size: 22px;z-index: 9;padding-right: 5px;">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <img id="imgModalLogo" class="logo">
+                    </div>
+                </div>
+            </div>
+        </div>
         <?php include_once('./templates/components/modalAlert.php'); ?>
         <?php include_once('./templates/components/modal.php'); ?>
         <div class="container-scroller no_print">

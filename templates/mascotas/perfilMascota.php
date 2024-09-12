@@ -25,15 +25,31 @@
                         <h4 class="card-title">Datos Mascota</h4>
                         <div class="row">
                             <div class="col-md-6 mb-2">
+                                <div class="card__avatar" style="width: fit-content;"> 
+                                    <img src="./../../Brummy/images/default.png" id="fotoMascotaPerfil" onclick="verFotoMultimedia(this.src)">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2" style="margin-top: auto;margin-bottom: auto !important;">
+                                <div class="buttom-green buttom" onclick="editarFotoMascota(localStorage.getItem('IDMascota'));">
+                                    <span class="text-sm mb-0 span-buttom"> 
+                                        Cambiar Foto
+                                        <i class="material-icons"> crop_original </i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
                                 <div class="cointainer-info">
                                     <h4> Nombre </h4>
-                                    <span class="capitalize" style="padding: 10px;" id="nombreMascota"></span>
+                                    <span class="capitalize" style="padding: 10px;" id="nombreMascota_perf"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-2">
                                 <div class="cointainer-info">
                                     <h4> Fecha Nacimiento </h4>
-                                    <span class="capitalize" style="padding: 10px;" id="fechaMascota"></span>
+                                    <span class="capitalize" style="padding: 10px;" id="fechaMascota_perf"></span>
                                 </div>
                             </div>
                         </div>
@@ -42,13 +58,13 @@
                             <div class="col-md-6 mb-2">
                                 <div class="cointainer-info">
                                     <h4> Relación Especie </h4>
-                                    <span class="capitalize" style="padding: 10px;" id="relacionEspecie"></span>
+                                    <span class="capitalize" style="padding: 10px;" id="relacionEspecie_perf"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-2">
                                 <div class="cointainer-info">
                                     <h4> Sexo </h4>
-                                    <span class="capitalize" style="padding: 10px;" id="sexoMascota"></span>
+                                    <span class="capitalize" style="padding: 10px;" id="sexoMascota_perf"></span>
                                 </div>
                             </div>
                         </div>
@@ -57,13 +73,13 @@
                             <div class="col-md-6 mb-2">
                                 <div class="cointainer-info">
                                     <h4> Color </h4>
-                                    <span class="capitalize" style="padding: 10px;" id="colorMascota"></span>
+                                    <span class="capitalize" style="padding: 10px;" id="colorMascota_perf"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-2">
                                 <div class="cointainer-info">
                                     <h4> Rasgos Particulares </h4>
-                                    <span class="capitalize" style="padding: 10px;" id="rasgosMascota"></span>
+                                    <span class="capitalize" style="padding: 10px;" id="rasgosMascota_perf"></span>
                                 </div>
                             </div>
                         </div>
@@ -72,7 +88,7 @@
                             <div class="col-md-4 mb-2">
                                 <div class="cointainer-info">
                                     <h4> Dueño </h4>
-                                    <span class="capitalize" style="padding: 10px;" id="FK_dueno"></span>
+                                    <span class="capitalize" style="padding: 10px;" id="FK_dueno_perf"></span>
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
