@@ -12,7 +12,7 @@ namespace inventario\inventarioModel;
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $sql = "SELECT * FROM inventario WHERE estatus = 1";
+            $sql = "SELECT *, getMultimedia(ID, 8, 1) as urlImg FROM inventario WHERE estatus = 1";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -90,7 +90,19 @@ namespace inventario\inventarioModel;
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
-                    $result = array('success' => true, 'result' => 'Sin Datos');
+                    $sql = "SELECT ID FROM inventario ORDER BY ID DESC LIMIT 1";
+                    try{
+                        $stmt = mysqli_query($conexion, $sql);
+                        if($stmt){
+                            $rowcount=mysqli_num_rows($stmt);   
+                            if ( $rowcount ) {
+                                while($row = mysqli_fetch_assoc($stmt)) {
+                                    $FK_product = $row['ID'];
+                                }
+                                $result = array('success' => true, 'result' => 'Sin Datos', 'result2' => $FK_product);
+                            }
+                        }
+                    } catch (mysqli_sql_exception $e) { }
                 } else {
                     $result = array('success' => false, 'result' => false, "result_query_sql_error"=>"Error no conocido" );
                 }

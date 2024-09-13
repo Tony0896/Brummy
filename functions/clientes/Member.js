@@ -51,6 +51,16 @@ $(document).ready(function () {
         foreground: "#000", // Color del QR
         level: "Q", // Puede ser L,M,Q y H (L es el de menor nivel, H el mayor)
     });
+
+    let urlImg = localStorage.getItem("urlImg");
+    if (urlImg) {
+        $("#image").attr("src", "./../../" + urlImg);
+        $("#modal").modal({
+            backdrop: "static",
+            keyboard: false,
+        });
+        $("#modal").modal("show");
+    }
 });
 
 $("#crearpdf").click(() => {

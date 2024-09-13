@@ -432,3 +432,11 @@ function verFotoMultimedia(src) {
     $("#imgModalLogo").attr("src", src);
     $("#staticBackdrop").modal("show");
 }
+
+$(".main-panel").click(() => {
+    if (localStorage.getItem("btnHideDash")) {
+        if (localStorage.getItem("btnHideDash") == 1) {
+            $("#btnHideDash").trigger("click");
+        }
+    }
+});

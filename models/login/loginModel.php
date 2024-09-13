@@ -452,7 +452,15 @@ namespace login\loginModel;
                     $ruta_mov_file = 'Brummy/images/HPS/Mascotas/Historial';
                     $motivoMovimiento = 'Logo agregado';
                     $motivoMovimiento2 = 'Logo actualizado';
-                }
+                } else if($IDAccion == 1 && $IDModulo == 5){
+                    $ruta_mov_file = 'Brummy/images/HPS/Clientes/Perfil';
+                    $motivoMovimiento = 'Foto cliente agregada';
+                    $motivoMovimiento2 = 'Foto cliente actualizada';
+                } else if($IDAccion == 1 && $IDModulo == 8){
+                    $ruta_mov_file = 'Brummy/images/HPS/Inventario/Foto';
+                    $motivoMovimiento = 'Foto Producto agregada';
+                    $motivoMovimiento2 = 'Foto Producto actualizada';
+                } 
                 if($IDAccion == 1){
                     $sql = "UPDATE multimedia SET estatus = 0, motivoMovimiento = '$motivoMovimiento2' WHERE FKPertenece = $FKPertenece AND IDModulo = $IDModulo AND IDAccion = $IDAccion;";
                     try{

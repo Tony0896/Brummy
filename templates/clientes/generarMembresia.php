@@ -140,7 +140,7 @@
             </div>
             <div class="modal-body">
                 <div class="img-container">
-                    <img id="image" src="./images/avatar.png" alt="Picture" style="max-width: 100%;">
+                    <img id="image" src="./../../Brummy/images/default.png" alt="Picture" style="max-width: 100%;">
                 </div>
                 <div id="result" style="display: none;"></div>
             </div>

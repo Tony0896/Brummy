@@ -24,6 +24,7 @@
                         <tr>
                             <th>#</th>
                             <th>Codigo</th>
+                            <th></th>
                             <th>Nombre</th>
                             <th>Tipo</th>
                             <th>Categoría</th>

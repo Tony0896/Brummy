@@ -24,6 +24,7 @@
                             <th>#</th>
                             <th>ID</th>
                             <th></th>
+                            <th></th>
                             <th>Cliente</th>
                             <th>Teléfono</th>
                             <th>Correo</th>

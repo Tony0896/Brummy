@@ -38,6 +38,15 @@ function obtenerClientes() {
                             html += `<tr>
                                 <td>${index + 1}</td>
                                 <td>BRUHPSCTE${data.ID}</td>
+                                <td> 
+                                    <div class="card__avatar"> 
+                                    ${
+                                        data.urlImg
+                                            ? `<img src="./../../${data.urlImg}" alt="" onclick="verFotoMultimedia(this.src)"> `
+                                            : `<img src="./../../Brummy/images/default.png" alt="" >`
+                                    }    
+                                    </div>
+                                </td>
                                 <td> <span class="material-icons" style="font-size: 18px;color: ${temperamento}"> fiber_manual_record </span> </td>
                                 <td class="capitalize">${data.nombre} ${data.apellidoP} ${data.apellidoM}</td>
                                 <td ${data.telefono ? "" : 'style="text-align: center;"'}>${data.telefono ? data.telefono : tdSinData}</td>
@@ -59,8 +68,14 @@ function obtenerClientes() {
                                             <span class="text-sm mb-0"><i class="material-icons"> timeline </i></span>
                                         </div>
 
-                                        <div class="buttom-blue buttom button-sinText mx-1" title="Ver Membresía" onclick="memberCliente(${data.ID})">
+                                        <div class="buttom-blue buttom button-sinText mx-1" title="Ver Membresía" 
+                                            onclick="memberCliente(${data.ID}, '${data.urlImg ? data.urlImg : ""}')">
                                             <span class="text-sm mb-0"><i class="material-icons"> portrait </i></span>
+                                        </div>
+
+                                        <div class="buttom-green buttom button-sinText mx-1" title="Editar Foto" 
+                                            onclick="editarFotoCliente(${data.ID})">
+                                            <span class="text-sm mb-0"><i class="material-icons"> crop_original </i></span>
                                         </div>
                                     </div>
                                 </td>
@@ -127,10 +142,20 @@ function crearCliente() {
                     <option value="rojo">&#128997;</option>
                 </select>
             </div>
+
+            <br>
+            <div class="coolinput" style="width: 200px;margin: auto;">
+                <input type="file" class="my-pond" name="filepond" />
+            </div>
+
+            <div class="row" style="margin-bottom: 25px;display:none;">
+                <button type="button" class="btn btn-primary" id="SendFilesClientes">Save changes</button>
+                <input type="hidden" id="FKClienteResponse">
+            </div>
         </div>
 
         <div class="center-fitcomponent" style="width: 100%;">
-            <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" onclick="guardarCliente();">
+            <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="preguardarCliente">
                 <span class="text-sm mb-0 span-buttom"> 
                     Guardar
                     <i class="material-icons"> save </i>
@@ -138,6 +163,114 @@ function crearCliente() {
             </div>
         </div>
     `);
+
+    $(function () {
+        // First register any plugins
+        $.fn.filepond.registerPlugin(
+            FilePondPluginFileValidateType,
+            FilePondPluginImageExifOrientation,
+            FilePondPluginImagePreview,
+            FilePondPluginImageCrop,
+            FilePondPluginImageResize,
+            FilePondPluginImageTransform,
+            FilePondPluginImageEdit
+        );
+
+        // Turn input element into a pond
+        $(".my-pond").filepond();
+
+        // Set allowMultiple property to true
+        $(".my-pond").filepond("allowMultiple", false);
+        $(".my-pond").filepond("labelIdle", "Agregar Imagen Cliente");
+        $(".my-pond").filepond("imagePreviewHeight", 170);
+        $(".my-pond").filepond("imageCropAspectRatio", "1:1");
+        $(".my-pond").filepond("imageResizeTargetWidth", 200);
+        $(".my-pond").filepond("imageResizeTargetHeight", 200);
+        $(".my-pond").filepond("stylePanelLayout", "circle");
+        $(".my-pond").filepond("styleLoadIndicatorPosition", "center bottom");
+        $(".my-pond").filepond("styleProgressIndicatorPosition", "right bottom");
+        $(".my-pond").filepond("styleButtonRemoveItemPosition", "left bottom");
+        $(".my-pond").filepond("styleButtonProcessItemPosition", "right bottom");
+
+        // Listen for addfile event
+        $(".my-pond").on("FilePond:addfile", function (e) {
+            console.log("file added event", e);
+        });
+
+        // Manually add a file using the addfile method
+        // $(".my-pond")
+        //     .first()
+        //     .filepond("addFile", "index.html")
+        //     .then(function (file) {
+        //         console.log("file added", file);
+        //     });
+
+        $("#preguardarCliente").click(() => {
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                guardarCliente();
+            } else {
+                Swal.fire({
+                    title: "",
+                    text: "Aún no tienes una imagen del cliente. ¿Deseas continuar?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonColor: "#7066e0",
+                    cancelButtonColor: "#FF0037",
+                    confirmButtonText: "OK",
+                    cancelButtonText: "Cancelar",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        guardarCliente();
+                    }
+                });
+            }
+        });
+
+        $("#SendFilesClientes").click(() => {
+            let formData = new FormData();
+            // append files array into the form data
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                for (var i = 0; i < pondFiles.length; i++) {
+                    formData.append("Adjunto_" + i, pondFiles[i].file);
+                }
+                formData.append("NoDocs", pondFiles.length);
+                formData.append("FKPertenece", $("#FKClienteResponse").val());
+                formData.append("IDModulo", 5);
+                formData.append("IDAccion", 1);
+                formData.append("NombreModulo", "Clientes");
+                formData.append("fechaRegistro", moment().format("YYYY-MM-DD"));
+                formData.append("fechaRegistroH", moment().format("YYYY-MM-DDTHH:mm:ss"));
+
+                $.ajax({
+                    url: "views/login/guardaDocs.php",
+                    type: "POST",
+                    data: formData,
+                    dataType: "JSON",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function (data) {
+                        let response = Number(data);
+                        if (response) {
+                            if (response > 0) {
+                                $(".my-pond").filepond("removeFiles");
+                                $("#modalTemplate").modal("hide");
+                                $("#btnClose").off("click");
+                                obtenerClientes();
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    },
+                });
+            } else {
+                obtenerClientes();
+            }
+        });
+    });
 
     $("#modalTemplate").modal({
         backdrop: "static",
@@ -279,15 +412,16 @@ function guardarCliente() {
         let correo = String($("#correo").val()).trim();
         let indicadorCliente = $("#indicadorCliente").val();
 
-        let arr_data_form = {
-            arr_components: ["nombre", "apellidoP", "apellidoM", "telefono", "correo"],
-            arr_max_components: [10, 10, 10, 15, 50],
-            arr_min_components: [5, 5, 5, 10, 10],
-            arr_tipo_val: ["str", "str", "str", "number", "email"],
-            arr_required: [1, 1, 0, 1, 0],
-        };
+        // let arr_data_form = {
+        //     arr_components: ["nombre", "apellidoP", "apellidoM", "telefono", "correo"],
+        //     arr_max_components: [10, 10, 10, 15, 50],
+        //     arr_min_components: [5, 5, 5, 10, 10],
+        //     arr_tipo_val: ["str", "str", "str", "number", "email"],
+        //     arr_required: [1, 1, 0, 1, 0],
+        // };
 
-        let resp_val_form = validarCaracteresForm(arr_data_form);
+        // let resp_val_form = validarCaracteresForm(arr_data_form);
+        let resp_val_form = true;
 
         if (!resp_val_form) {
             console.log("No paso filtro validacion formulario");
@@ -315,10 +449,13 @@ function guardarCliente() {
                 let result = results.result;
                 switch (success) {
                     case true:
+                        let result2 = results.result2;
                         $("#modalTemplate").modal("hide");
                         $("#btnClose").off("click");
                         msj.show("Aviso", "Guardado correctamente", [{ text1: "OK" }]);
-                        obtenerClientes();
+                        $("#FKClienteResponse").val(result2);
+                        $("#SendFilesClientes").trigger("click");
+                        // obtenerClientes();
                         break;
                     case false:
                         preloader.hide();
@@ -655,7 +792,7 @@ function verDetalleVentaCliente(ID, cambioVenta) {
         });
 }
 
-function memberCliente(ID) {
+function memberCliente(ID, urlImg) {
     preloader.show();
     $.ajax({
         method: "POST",
@@ -686,6 +823,7 @@ function memberCliente(ID) {
                             data.nombre ? localStorage.setItem("nombre", data.nombre) : localStorage.setItem("nombre", "");
                             data.telefono ? localStorage.setItem("telefono", data.telefono) : localStorage.setItem("telefono", "");
                             localStorage.setItem("IDCte", ID);
+                            localStorage.setItem("urlImg", urlImg);
                         });
 
                         $.ajax({
@@ -890,4 +1028,139 @@ function memberCliente(ID) {
             preloader.hide();
             console.log("adminCapacitacion: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
         });
+}
+
+function editarFotoCliente(ID) {
+    console.log(ID);
+    $("#labelModal").html(`Editar Foto`);
+
+    $("#body_modal").html(`<br>
+        <div id="formClientes">
+            <br>
+            <div class="coolinput" style="width: 200px;margin: auto;">
+                <input type="file" class="my-pond" name="filepond" />
+            </div>
+
+            <div class="row" style="margin-bottom: 25px;display:none;">
+                <button type="button" class="btn btn-primary" id="SendFilesClientes">Save changes</button>
+                <input type="hidden" id="FKClienteResponse">
+            </div>
+        </div>
+
+        <div class="center-fitcomponent" style="width: 100%;">
+            <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="preguardarClienteEdit">
+                <span class="text-sm mb-0 span-buttom"> 
+                    Guardar
+                    <i class="material-icons"> save </i>
+                </span>
+            </div>
+        </div>
+    `);
+
+    $(function () {
+        // First register any plugins
+        $.fn.filepond.registerPlugin(
+            FilePondPluginFileValidateType,
+            FilePondPluginImageExifOrientation,
+            FilePondPluginImagePreview,
+            FilePondPluginImageCrop,
+            FilePondPluginImageResize,
+            FilePondPluginImageTransform,
+            FilePondPluginImageEdit
+        );
+
+        // Turn input element into a pond
+        $(".my-pond").filepond();
+
+        // Set allowMultiple property to true
+        $(".my-pond").filepond("allowMultiple", false);
+        $(".my-pond").filepond("labelIdle", "Agregar Imagen Cliente");
+        $(".my-pond").filepond("imagePreviewHeight", 170);
+        $(".my-pond").filepond("imageCropAspectRatio", "1:1");
+        $(".my-pond").filepond("imageResizeTargetWidth", 200);
+        $(".my-pond").filepond("imageResizeTargetHeight", 200);
+        $(".my-pond").filepond("stylePanelLayout", "circle");
+        $(".my-pond").filepond("styleLoadIndicatorPosition", "center bottom");
+        $(".my-pond").filepond("styleProgressIndicatorPosition", "right bottom");
+        $(".my-pond").filepond("styleButtonRemoveItemPosition", "left bottom");
+        $(".my-pond").filepond("styleButtonProcessItemPosition", "right bottom");
+
+        // Listen for addfile event
+        $(".my-pond").on("FilePond:addfile", function (e) {
+            console.log("file added event", e);
+        });
+
+        // Manually add a file using the addfile method
+        // $(".my-pond")
+        //     .first()
+        //     .filepond("addFile", "index.html")
+        //     .then(function (file) {
+        //         console.log("file added", file);
+        //     });
+
+        $("#preguardarClienteEdit").click(() => {
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                $("#SendFilesClientes").trigger("click");
+            } else {
+                msj.show("Aviso", "Aún no tienes una imagen del cliente.", [{ text1: "OK" }]);
+            }
+        });
+
+        $("#SendFilesClientes").click(() => {
+            let formData = new FormData();
+            // append files array into the form data
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                for (var i = 0; i < pondFiles.length; i++) {
+                    formData.append("Adjunto_" + i, pondFiles[i].file);
+                }
+                formData.append("NoDocs", pondFiles.length);
+                formData.append("FKPertenece", ID);
+                formData.append("IDModulo", 5);
+                formData.append("IDAccion", 1);
+                formData.append("NombreModulo", "Clientes");
+                formData.append("fechaRegistro", moment().format("YYYY-MM-DD"));
+                formData.append("fechaRegistroH", moment().format("YYYY-MM-DDTHH:mm:ss"));
+
+                $.ajax({
+                    url: "views/login/guardaDocs.php",
+                    type: "POST",
+                    data: formData,
+                    dataType: "JSON",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function (data) {
+                        let response = Number(data);
+                        if (response) {
+                            if (response > 0) {
+                                $(".my-pond").filepond("removeFiles");
+                                $("#modalTemplate").modal("hide");
+                                $("#btnClose").off("click");
+                                obtenerClientes();
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    },
+                });
+            } else {
+                obtenerClientes();
+            }
+        });
+    });
+
+    $("#modalTemplate").modal({
+        backdrop: "static",
+        keyboard: false,
+    });
+
+    $("#modalTemplate").modal("show");
+
+    $("#btnClose").on("click", () => {
+        $("#modalTemplate").modal("hide");
+        $("#btnClose").off("click");
+    });
 }

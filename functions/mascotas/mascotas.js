@@ -301,6 +301,7 @@ function crearMascota() {
                                                                         $(".my-pond").filepond("removeFiles");
                                                                         $("#modalTemplate").modal("hide");
                                                                         $("#btnClose").off("click");
+                                                                        obtenerMascotas();
                                                                     }
                                                                 }
                                                             },
@@ -308,6 +309,8 @@ function crearMascota() {
                                                                 msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
                                                             },
                                                         });
+                                                    } else {
+                                                        obtenerMascotas();
                                                     }
                                                 });
                                             });
@@ -406,7 +409,7 @@ function guardarMascota() {
                         $("#modalTemplate").modal("hide");
                         $("#btnClose").off("click");
                         msj.show("Aviso", "Guardado correctamente", [{ text1: "OK" }]);
-                        obtenerMascotas();
+                        // obtenerMascotas();
                         break;
                     case false:
                         preloader.hide();

@@ -34,6 +34,15 @@ function obtenerInventario() {
                             html += `<tr>
                                 <td>${index + 1}</td>
                                 <td>${codigo}</td>
+                                <td>
+                                    <div class="card__avatar"> 
+                                    ${
+                                        data.urlImg
+                                            ? `<img src="./../../${data.urlImg}" alt="" onclick="verFotoMultimedia(this.src)"> `
+                                            : `<img src="./../../Brummy/images/default.png" alt="" >`
+                                    }    
+                                    </div>
+                                </td>
                                 <td>${data.nombre}</td>
                                 <td>${data.Flagtipo}</td>
                                 <td>${data.nameCategoria ? data.nameCategoria : "N/A"}</td>
@@ -43,6 +52,11 @@ function obtenerInventario() {
                                     <div style="display: flex; flex-direction: row;">
                                         <div class="buttom-blue buttom button-sinText mx-1" title="Ver Producto" onclick="verProducto(${data.ID})">
                                             <span class="text-sm mb-0"><i class="material-icons"> inventory_2 </i></span>
+                                        </div>
+
+                                        <div class="buttom-green buttom button-sinText mx-1" title="Editar Foto"
+                                            onclick="editarFotoInventario(${data.ID})">
+                                            <span class="text-sm mb-0"><i class="material-icons"> crop_original </i></span>
                                         </div>
                                     </div>
                                 </td>
@@ -146,25 +160,132 @@ function nuevoProducto() {
                             </div>
                     
                             <br>
-                            <div class="coolinput">
-                                <div class="container_upload"> 
-                                    <div class="header_upload"> 
-                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> 
-                                        <path d="M7 10V9C7 6.23858 9.23858 4 12 4C14.7614 4 17 6.23858 17 9V10C19.2091 10 21 11.7909 21 14C21 15.4806 20.1956 16.8084 19 17.5M7 10C4.79086 10 3 11.7909 3 14C3 15.4806 3.8044 16.8084 5 17.5M7 10C7.43285 10 7.84965 10.0688 8.24006 10.1959M12 12V21M12 12L15 15M12 12L9 15" stroke="#009071" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg> <p>Adjuntar una foto del producto!</p>
-                                    </div> 
-                                    <input id="file" type="file"> 
-                                </div>
+                            <div class="coolinput div_producto div_servicio" style="width: 200px;margin: auto;margin-top: 25px;">
+                                <input type="file" class="my-pond" name="filepond" />
                             </div>
                     
                             <div class="center-fitcomponent" style="width: 100%;">
-                                <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" onclick="guardarProducto();">
+                                <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="preguardarProducto">
                                     <span class="text-sm mb-0 span-buttom"> 
                                         Guardar
                                         <i class="material-icons"> save </i>
                                     </span>
                                 </div>
                             </div>
+
+                            <div class="row" style="margin-bottom: 25px;display:none;">
+                                <button type="button" class="btn btn-primary" id="SendFilesInventario">Save changes</button>
+                                <input type="hidden" id="FKInventarioResponse">
+                            </div>
                         `);
+
+                        $(function () {
+                            // First register any plugins
+                            $.fn.filepond.registerPlugin(
+                                FilePondPluginFileValidateType,
+                                FilePondPluginImageExifOrientation,
+                                FilePondPluginImagePreview,
+                                FilePondPluginImageCrop,
+                                FilePondPluginImageResize,
+                                FilePondPluginImageTransform,
+                                FilePondPluginImageEdit
+                            );
+
+                            // Turn input element into a pond
+                            $(".my-pond").filepond();
+
+                            // Set allowMultiple property to true
+                            $(".my-pond").filepond("allowMultiple", false);
+                            $(".my-pond").filepond("labelIdle", "Agregar Imagen mascota");
+                            $(".my-pond").filepond("imagePreviewHeight", 170);
+                            $(".my-pond").filepond("imageCropAspectRatio", "1:1");
+                            $(".my-pond").filepond("imageResizeTargetWidth", 200);
+                            $(".my-pond").filepond("imageResizeTargetHeight", 200);
+                            $(".my-pond").filepond("stylePanelLayout", "circle");
+                            $(".my-pond").filepond("styleLoadIndicatorPosition", "center bottom");
+                            $(".my-pond").filepond("styleProgressIndicatorPosition", "right bottom");
+                            $(".my-pond").filepond("styleButtonRemoveItemPosition", "left bottom");
+                            $(".my-pond").filepond("styleButtonProcessItemPosition", "right bottom");
+
+                            // Listen for addfile event
+                            $(".my-pond").on("FilePond:addfile", function (e) {
+                                console.log("file added event", e);
+                            });
+
+                            // Manually add a file using the addfile method
+                            // $(".my-pond")
+                            //     .first()
+                            //     .filepond("addFile", "index.html")
+                            //     .then(function (file) {
+                            //         console.log("file added", file);
+                            //     });
+
+                            $("#preguardarProducto").click(() => {
+                                pondFiles = $(".my-pond").filepond("getFiles");
+                                if (pondFiles.length > 0) {
+                                    guardarProducto();
+                                } else {
+                                    Swal.fire({
+                                        title: "",
+                                        text: "Aún no tienes una imagen de la mascota. ¿Deseas continuar?",
+                                        icon: "question",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#7066e0",
+                                        cancelButtonColor: "#FF0037",
+                                        confirmButtonText: "OK",
+                                        cancelButtonText: "Cancelar",
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            guardarProducto();
+                                        }
+                                    });
+                                }
+                            });
+
+                            $("#SendFilesInventario").click(() => {
+                                let formData = new FormData();
+                                // append files array into the form data
+                                pondFiles = $(".my-pond").filepond("getFiles");
+                                if (pondFiles.length > 0) {
+                                    for (var i = 0; i < pondFiles.length; i++) {
+                                        formData.append("Adjunto_" + i, pondFiles[i].file);
+                                    }
+                                    formData.append("NoDocs", pondFiles.length);
+                                    formData.append("FKPertenece", $("#FKInventarioResponse").val());
+                                    formData.append("IDModulo", 8);
+                                    formData.append("IDAccion", 1);
+                                    formData.append("NombreModulo", "Inventario");
+                                    formData.append("fechaRegistro", moment().format("YYYY-MM-DD"));
+                                    formData.append("fechaRegistroH", moment().format("YYYY-MM-DDTHH:mm:ss"));
+
+                                    $.ajax({
+                                        url: "views/login/guardaDocs.php",
+                                        type: "POST",
+                                        data: formData,
+                                        dataType: "JSON",
+                                        contentType: false,
+                                        cache: false,
+                                        processData: false,
+                                        success: function (data) {
+                                            let response = Number(data);
+                                            if (response) {
+                                                if (response > 0) {
+                                                    $(".my-pond").filepond("removeFiles");
+                                                    $("#modalTemplate").modal("hide");
+                                                    $("#btnClose").off("click");
+                                                    obtenerInventario();
+                                                }
+                                            }
+                                        },
+                                        error: function (data) {
+                                            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                                        },
+                                    });
+                                } else {
+                                    obtenerInventario();
+                                }
+                            });
+                        });
 
                         $("#categoria").select2({
                             dropdownParent: $("#modalTemplate"),
@@ -253,10 +374,13 @@ function guardarProducto() {
                 let result = results.result;
                 switch (success) {
                     case true:
+                        let result2 = results.result2;
+                        $("#FKInventarioResponse").val(result2);
+                        $("#SendFilesInventario").trigger("click");
                         $("#modalTemplate").modal("hide");
                         $("#btnClose").off("click");
                         msj.show("Aviso", "Guardado correctamente", [{ text1: "OK" }]);
-                        obtenerInventario();
+                        // obtenerInventario();
                         break;
                     case false:
                         preloader.hide();
@@ -564,5 +688,139 @@ function eliminarProdcuto(ID) {
                     console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
                 });
         }
+    });
+}
+
+function editarFotoInventario(ID) {
+    console.log(ID);
+    $("#labelModal").html(`Editar Foto`);
+
+    $("#body_modal").html(`<br>
+        <div id="formInven">
+            <br>
+            <div class="coolinput" style="width: 200px;margin: auto;">
+                <input type="file" class="my-pond" name="filepond" />
+            </div>
+
+            <div class="row" style="margin-bottom: 25px;display:none;">
+                <button type="button" class="btn btn-primary" id="SendFilesInventEdit">Save changes</button>
+            </div>
+        </div>
+
+        <div class="center-fitcomponent" style="width: 100%;">
+            <div class="buttom-blue buttom" style="margin-left: auto;margin-right: auto;" id="preFotoInv">
+                <span class="text-sm mb-0 span-buttom"> 
+                    Guardar
+                    <i class="material-icons"> save </i>
+                </span>
+            </div>
+        </div>
+    `);
+
+    $(function () {
+        // First register any plugins
+        $.fn.filepond.registerPlugin(
+            FilePondPluginFileValidateType,
+            FilePondPluginImageExifOrientation,
+            FilePondPluginImagePreview,
+            FilePondPluginImageCrop,
+            FilePondPluginImageResize,
+            FilePondPluginImageTransform,
+            FilePondPluginImageEdit
+        );
+
+        // Turn input element into a pond
+        $(".my-pond").filepond();
+
+        // Set allowMultiple property to true
+        $(".my-pond").filepond("allowMultiple", false);
+        $(".my-pond").filepond("labelIdle", "Agregar Imagen Producto");
+        $(".my-pond").filepond("imagePreviewHeight", 170);
+        $(".my-pond").filepond("imageCropAspectRatio", "1:1");
+        $(".my-pond").filepond("imageResizeTargetWidth", 200);
+        $(".my-pond").filepond("imageResizeTargetHeight", 200);
+        $(".my-pond").filepond("stylePanelLayout", "circle");
+        $(".my-pond").filepond("styleLoadIndicatorPosition", "center bottom");
+        $(".my-pond").filepond("styleProgressIndicatorPosition", "right bottom");
+        $(".my-pond").filepond("styleButtonRemoveItemPosition", "left bottom");
+        $(".my-pond").filepond("styleButtonProcessItemPosition", "right bottom");
+
+        // Listen for addfile event
+        $(".my-pond").on("FilePond:addfile", function (e) {
+            console.log("file added event", e);
+        });
+
+        // Manually add a file using the addfile method
+        // $(".my-pond")
+        //     .first()
+        //     .filepond("addFile", "index.html")
+        //     .then(function (file) {
+        //         console.log("file added", file);
+        //     });
+
+        $("#preFotoInv").click(() => {
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                $("#SendFilesInventEdit").trigger("click");
+            } else {
+                msj.show("Aviso", "Aún no tienes una imagen del producto.", [{ text1: "OK" }]);
+            }
+        });
+
+        $("#SendFilesInventEdit").click(() => {
+            let formData = new FormData();
+            // append files array into the form data
+            pondFiles = $(".my-pond").filepond("getFiles");
+            if (pondFiles.length > 0) {
+                for (var i = 0; i < pondFiles.length; i++) {
+                    formData.append("Adjunto_" + i, pondFiles[i].file);
+                }
+                formData.append("NoDocs", pondFiles.length);
+                formData.append("FKPertenece", ID);
+                formData.append("IDModulo", 8);
+                formData.append("IDAccion", 1);
+                formData.append("NombreModulo", "Inventario");
+                formData.append("fechaRegistro", moment().format("YYYY-MM-DD"));
+                formData.append("fechaRegistroH", moment().format("YYYY-MM-DDTHH:mm:ss"));
+
+                $.ajax({
+                    url: "views/login/guardaDocs.php",
+                    type: "POST",
+                    data: formData,
+                    dataType: "JSON",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function (data) {
+                        let response = Number(data);
+                        if (response) {
+                            if (response > 0) {
+                                $(".my-pond").filepond("removeFiles");
+                                $("#modalTemplate").modal("hide");
+                                $("#btnClose").off("click");
+                                obtenerInventario();
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                    },
+                });
+            } else {
+                obtenerInventario();
+            }
+        });
+    });
+
+    $("#modalTemplate").modal({
+        backdrop: "static",
+        keyboard: false,
+    });
+
+    $("#modalTemplate").modal("show");
+
+    $("#btnClose").on("click", () => {
+        $("#modalTemplate").modal("hide");
+        $("#btnClose").off("click");
     });
 }

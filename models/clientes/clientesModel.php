@@ -26,7 +26,7 @@ namespace clientes\clientesModel;
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $sql = "SELECT * FROM clientes WHERE estatus = 1";
+            $sql = "SELECT *, getMultimedia(ID, 5, 1) as urlImg FROM clientes WHERE estatus = 1";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){
@@ -89,6 +89,7 @@ namespace clientes\clientesModel;
                                     $ID_mov = $row['ID'];
                                 }
                                 $this->InsertHistoriaCliente($FK_Cliente, $nombre, $FK_modulo, $nombreModulo, $motivo, $FK_Usuario, $nameUsuario, $ID_mov);
+                                $result = array('success' => true, 'result' => 'Sin Datos', 'result2' => $FK_Cliente);
                             }
                         }
                     } catch (mysqli_sql_exception $e) { }
