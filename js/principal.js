@@ -428,7 +428,7 @@ function getProductosAgotar() {
                                 <tr>
                                     <td>${Number(index + 1)}</td>
                                     <td>${data.codigo}</td>
-                                    <td>${data.nombre} <br> ${data.descripcion}</td>
+                                    <td><strong> ${data.nombre} </strong> <br> <text style="font-style: italic;">(${data.descripcion})</text></td>
                                     <td>${data.stockReal}</td>
                                 </tr>
                             `;

@@ -365,7 +365,7 @@ namespace login\loginModel;
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $sql = "SELECT (stockReal - stockMinimo) as resta, codigo, nombre,	descripcion, stockMinimo, stockReal FROM inventario WHERE tipo = 'Producto' AND estatus = 1 ORDER BY resta;";
+            $sql = "SELECT (stockReal - stockMinimo) as resta, codigo, nombre,	descripcion, stockMinimo, stockReal FROM inventario WHERE tipo = 'Producto' AND estatus = 1 AND stockMinimo >= stockReal ORDER BY resta;";
             
             try{
                 $stmt = mysqli_query($conexion, $sql);

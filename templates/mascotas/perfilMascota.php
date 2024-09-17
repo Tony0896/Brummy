@@ -26,7 +26,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-2">
                                 <div class="card__avatar" style="width: fit-content;"> 
-                                    <img src="./../../Brummy/images/default.png" id="fotoMascotaPerfil" onclick="verFotoMultimedia(this.src)">
+                                    <img src="./../../Brummy/images/defaultq.png" id="fotoMascotaPerfil" onclick="verFotoMultimedia(this.src)">
                                 </div>
                             </div>
                             <div class="col-md-6 mb-2" style="margin-top: auto;margin-bottom: auto !important;">

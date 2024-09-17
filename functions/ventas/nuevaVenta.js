@@ -43,8 +43,16 @@ function dataVenta() {
                                             if (data.fechaInicio <= getDateActual() && data.fechaFin >= getDateActual()) {
                                                 descuento = (Number(data.porcentaje) * data.precioVenta) / 100;
                                             }
-                                            html2 += `<option value="${data.ID}" data_descuento="${descuento}" data_Flagtipo = "${data.Flagtipo}" data_codigo = "${data.codigo}" data_descripcion = "${data.descripcion}" data_nombre = "${data.nombre}" data_precioVenta = "${data.precioVenta}" data_stockReal = "${data.stockReal}">
-                                                ${data.codigo} - ${data.nombre}
+                                            html2 += `<option value="${data.ID}" 
+                                            data_descuento="${descuento}" 
+                                            data_Flagtipo = "${data.Flagtipo}" 
+                                            data_codigo = "${data.codigo}" 
+                                            data_descripcion = "${data.descripcion}" 
+                                            data_nombre = "${data.nombre}" 
+                                            data_precioVenta = "${data.precioVenta}" 
+                                            data_stockReal = "${data.stockReal}" 
+                                            data_urlImg="${data.urlImg ? data.urlImg : ""}">
+                                                ${data.codigo} - ${data.nombre} (${data.descripcion})
                                             </option>`;
                                         });
 
@@ -100,10 +108,18 @@ function confirmarAgregarProducto() {
         let precioVenta = String($("#productos").find(":selected").attr("data_precioVenta"));
         let stockReal = String($("#productos").find(":selected").attr("data_stockReal"));
         let descuento = Number($("#productos").find(":selected").attr("data_descuento"));
+        let urlImg = String($("#productos").find(":selected").attr("data_urlImg"));
 
         Swal.fire({
             title: "",
-            text: `¿Estás seguro de querer agregar ${capitalizeLetras(nombre)} a la venta?`,
+            // text: `¿Estás seguro de querer agregar ${capitalizeLetras(nombre)} a la venta?`,
+            html: `¿Estás seguro de querer agregar <strong>${nombre}</strong> 
+            <text style="font-style: italic;">(${descripcion})</text> a la venta? 
+            ${
+                urlImg
+                    ? `<div style=" margin: auto;width: fit-content; padding: 20px 0px 0px 0px;"> <div class="card__avatar"> <img src="./../../${urlImg}" alt=""></div> </div>`
+                    : ``
+            }`,
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#7066e0",
@@ -123,8 +139,8 @@ function confirmarAgregarProducto() {
                             <input type="hidden" id="${random}_descuento" value="${descuento}">
 
                             <div>
-                                <span class="capitalize" id="${random}_FlagProducto">${nombre}</span>
-                                <p class="capitalize">${Flagtipo}</p>
+                                <span class="capitalize" id="${random}_FlagProducto"><strong>${nombre}</strong></span>
+                                <p class="capitalize">${Flagtipo} <text style="font-style: italic;">(${descripcion})</text></p>
                                 <p>$${Number(precioVenta).toFixed(2)}</p>
                             </div>
                             <div class="quantity">
@@ -374,12 +390,12 @@ function terminarVenta() {
                     
                     <div class="coolinput">
                         <label for="efectivo" class="text">Efectivo</label>
-                        <input type="text" class="capitalize input" id="efectivo" autocomplete="off" maxlength"20" onchange="calculaCambio()" disabled/>
+                        <input type="number" class="capitalize input" id="efectivo" autocomplete="off" maxlength"20" onchange="calculaCambio()" disabled/>
                     </div>
 
                     <div class="coolinput">
                         <label for="cambio" class="text">Cambio</label>
-                        <input type="text" class="capitalize input" id="cambio" autocomplete="off" maxlength"20" readonly/>
+                        <input type="number" class="capitalize input" id="cambio" autocomplete="off" maxlength"20" readonly/>
                     </div>
                     
                 </div>

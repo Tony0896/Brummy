@@ -22,21 +22,21 @@ namespace frecuentes\frecuentesModel;
                 if($TOP == 'TODOS'){
                     // $sql = "SELECT FKnombreCita, nombreCita,COUNT(FKnombreCita) as citas FROM citas WHERE estatus = 2 GROUP BY FKnombreCita ORDER BY citas DESC";
                     $sql = "SELECT FKnombreCita, nombreCita,COUNT(FKnombreCita) as citas, getIndicadorCliente(FKnombreCita) as indicadorCliente FROM citas 
-                    WHERE YEAR(fechaCita) = $filtroAnioCitas GROUP BY FKnombreCita ORDER BY citas DESC";
+                    WHERE YEAR(fechaCita) = $filtroAnioCitas AND estatus <> 3 GROUP BY FKnombreCita ORDER BY citas DESC";
                 } else {
                     // $sql = "SELECT FKnombreCita, nombreCita,COUNT(FKnombreCita) as citas FROM citas WHERE estatus = 2 GROUP BY FKnombreCita ORDER BY citas DESC LIMIT $TOP";
                     $sql = "SELECT FKnombreCita, nombreCita,COUNT(FKnombreCita) as citas, getIndicadorCliente(FKnombreCita) as indicadorCliente FROM citas 
-                    WHERE YEAR(fechaCita) = $filtroAnioCitas GROUP BY FKnombreCita ORDER BY citas DESC LIMIT $TOP";
+                    WHERE YEAR(fechaCita) = $filtroAnioCitas AND estatus <> 3 GROUP BY FKnombreCita ORDER BY citas DESC LIMIT $TOP";
                 }
             } else {
                 if($TOP == 'TODOS'){
                     // $sql = "SELECT FKnombreCita, nombreCita,COUNT(FKnombreCita) as citas FROM citas WHERE estatus = 2 GROUP BY FKnombreCita ORDER BY citas DESC";
                     $sql = "SELECT FKnombreCita, nombreCita,COUNT(FKnombreCita) as citas, getIndicadorCliente(FKnombreCita) as indicadorCliente FROM citas 
-                    WHERE YEAR(fechaCita) = $filtroAnioCitas AND MONTH(fechaCita) = $filtroMesCitas GROUP BY FKnombreCita ORDER BY citas DESC";
+                    WHERE YEAR(fechaCita) = $filtroAnioCitas AND MONTH(fechaCita) = $filtroMesCitas AND estatus <> 3 GROUP BY FKnombreCita ORDER BY citas DESC";
                 } else {
                     // $sql = "SELECT FKnombreCita, nombreCita,COUNT(FKnombreCita) as citas FROM citas WHERE estatus = 2 GROUP BY FKnombreCita ORDER BY citas DESC LIMIT $TOP";
                     $sql = "SELECT FKnombreCita, nombreCita,COUNT(FKnombreCita) as citas, getIndicadorCliente(FKnombreCita) as indicadorCliente FROM citas 
-                    WHERE YEAR(fechaCita) = $filtroAnioCitas AND MONTH(fechaCita) = $filtroMesCitas GROUP BY FKnombreCita ORDER BY citas DESC LIMIT $TOP";
+                    WHERE YEAR(fechaCita) = $filtroAnioCitas AND MONTH(fechaCita) = $filtroMesCitas AND estatus <> 3 GROUP BY FKnombreCita ORDER BY citas DESC LIMIT $TOP";
                 }
             }
             

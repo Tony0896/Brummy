@@ -54,7 +54,7 @@ function verPerfilMascota(ID) {
                         if (urlImg) {
                             $("#fotoMascotaPerfil").attr("src", `./../../${urlImg}`);
                         } else {
-                            $("#fotoMascotaPerfil").attr("src", `./../../Brummy/images/default.png`);
+                            $("#fotoMascotaPerfil").attr("src", `./../../Brummy/images/defaultq.png`);
                         }
 
                         // mostramos el boton con la informacion de la mascota
@@ -100,31 +100,44 @@ function cambioTablero(id) {
 }
 
 function eliminarMascota(ID) {
-    $.ajax({
-        method: "POST",
-        dataType: "JSON",
-        url: "./views/mascotas/eliminarMascota.php",
-        data: { ID },
-    })
-        .done(function (results) {
-            let success = results.success;
-            let result = results.result;
-            switch (success) {
-                case true:
-                    preloader.show();
-                    regresaMascotas();
-                    break;
-                case false:
+    Swal.fire({
+        title: "",
+        text: "¿Estás seguro de querer eliminar la mascota?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#7066e0",
+        cancelButtonColor: "#FF0037",
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancelar",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                method: "POST",
+                dataType: "JSON",
+                url: "./views/mascotas/eliminarMascota.php",
+                data: { ID },
+            })
+                .done(function (results) {
+                    let success = results.success;
+                    let result = results.result;
+                    switch (success) {
+                        case true:
+                            preloader.show();
+                            regresaMascotas();
+                            break;
+                        case false:
+                            preloader.hide();
+                            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
+                            break;
+                    }
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
                     preloader.hide();
                     msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
-                    break;
-            }
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            preloader.hide();
-            msj.show("Aviso", "Algo salió mal", [{ text1: "OK" }]);
-            console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
-        });
+                    console.log("error: " + jqXHR.responseText + "\nEstatus: " + textStatus + "\nError: " + errorThrown);
+                });
+        }
+    });
 }
 
 function traerHistorialMascota(ID) {
@@ -268,15 +281,6 @@ function editarMascota(data_mascota) {
                                                         </select>
                                                     </div>
                                                     <br>
-                                                    <div class="coolinput">
-                                                        <div class="container_upload"> 
-                                                            <div class="header_upload"> 
-                                                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> 
-                                                                <path d="M7 10V9C7 6.23858 9.23858 4 12 4C14.7614 4 17 6.23858 17 9V10C19.2091 10 21 11.7909 21 14C21 15.4806 20.1956 16.8084 19 17.5M7 10C4.79086 10 3 11.7909 3 14C3 15.4806 3.8044 16.8084 5 17.5M7 10C7.43285 10 7.84965 10.0688 8.24006 10.1959M12 12V21M12 12L15 15M12 12L9 15" stroke="#009071" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg> <p>Adjuntar una foto de la mascota!</p>
-                                                            </div> 
-                                                            <input id="file" type="file"> 
-                                                            </div>
-                                                    </div>
 
                                                 </div>
 

@@ -41,7 +41,7 @@ namespace inventario\inventarioModel;
             $db = new ClaseConexionDB\ConexionDB();
             $conexion = $db->getConectaDB();
 
-            $sql = "SELECT i.*, p.porcentaje, p.fechaInicio ,p.fechaFin FROM inventario i LEFT JOIN promos p ON i.categoria = p.categoria WHERE i.estatus = 1 ORDER BY ID";
+            $sql = "SELECT i.*, p.porcentaje, p.fechaInicio ,p.fechaFin, getMultimedia(i.ID, 8, 1) as urlImg FROM inventario i LEFT JOIN promos p ON i.categoria = p.categoria WHERE i.estatus = 1 ORDER BY ID";
             try{
                 $stmt = mysqli_query($conexion, $sql);
                 if($stmt){

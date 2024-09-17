@@ -97,7 +97,7 @@ input.form-control.capitalize {
 }
 
 .capitalize {
-    text-transform: capitalize;
+    /* text-transform: capitalize; */
 }
 
 .nav-tabs .nav-link.active,
@@ -1000,7 +1000,7 @@ h2 {
 
 #content_comentario {
     width: auto; /* Ancho del div */
-    height: 262px; /* Altura del div */
+    height: 360px; /* Altura del div */
     overflow-y: auto; /* Añadir barra de desplazamiento vertical */
     padding: 10px; /* Espaciado interno para mejor apariencia */
 }

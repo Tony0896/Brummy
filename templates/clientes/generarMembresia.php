@@ -1,7 +1,7 @@
 <script type="text/javascript" src="./functions/clientes/Member.js"></script>
 <div class="row no_print">
     <div class="col-lg-12">
-        <h3 class="text-primary text-blue" onclick="backRoute()" style="width: fit-content;cursor: pointer;"><span class="fs-2 material-icons text-danger">arrow_back</span> Regresar </h3>
+        <h3 class="text-primary text-blue" onclick="backRoute()" style="width: fit-content;cursor: pointer;"><span class="fs-2 material-icons text-danger" style="vertical-align: middle;">arrow_back</span> Regresar </h3>
         <hr>
     </div>
 </div>
@@ -132,10 +132,9 @@
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header py-3" style="background-color: #009071;color:#FFF;border-top-left-radius: 10px;border-top-right-radius: 10px;">
                 <h5 class="modal-title" id="modalLabel">Editar Foto</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="close_modal" style="color: #08568C;">&times;</span>
+                <button type="button" class="close_modal btn-close" data-dismiss="modal" aria-label="Close" style="padding: 10px;font-size: 22px;z-index: 9;padding-right: 5px;">
                 </button>
             </div>
             <div class="modal-body">

@@ -43,7 +43,7 @@ function obtenerClientes() {
                                     ${
                                         data.urlImg
                                             ? `<img src="./../../${data.urlImg}" alt="" onclick="verFotoMultimedia(this.src)"> `
-                                            : `<img src="./../../Brummy/images/default.png" alt="" >`
+                                            : `<img src="./../../Brummy/images/client.png" alt="" >`
                                     }    
                                     </div>
                                 </td>
@@ -134,8 +134,8 @@ function crearCliente() {
             </div>
 
             <div class="coolinput">
-                <label for="indicadorCliente" class="text">Indicadr Cliente</label>
-                <select class="input capitalize obligatorio" name="Indicadr Cliente" id="indicadorCliente" style="background-color: rgb(255, 255, 255);width:100%;">
+                <label for="indicadorCliente" class="text">Indicador Cliente</label>
+                <select class="input capitalize obligatorio" name="Indicador Cliente" id="indicadorCliente" style="background-color: rgb(255, 255, 255);width:100%;">
                     <option value="">Selecciona una opción</option>
                     <option value="verde">&#129001;</option>
                     <option value="amarilo">&#129000;</option>
@@ -342,8 +342,8 @@ function verPerfilCliente(ID) {
                                     </div>
 
                                     <div class="coolinput">
-                                        <label for="indicadorCliente" class="text">Indicadr Cliente</label>
-                                        <select class="input capitalize obligatorio" name="Indicadr Cliente" id="indicadorClienteModal" style="background-color: rgb(255, 255, 255);width:100%;">
+                                        <label for="indicadorCliente" class="text">Indicador Cliente</label>
+                                        <select class="input capitalize obligatorio" name="Indicador Cliente" id="indicadorClienteModal" style="background-color: rgb(255, 255, 255);width:100%;">
                                             <option value="">Selecciona una opción</option>
                                             <option value="verde">&#129001;</option>
                                             <option value="amarilo">&#129000;</option>

@@ -43,7 +43,7 @@ function obtenerMascotas() {
                                     ${
                                         data.urlImg
                                             ? `<img src="./../../${data.urlImg}" alt="" onclick="verFotoMultimedia(this.src)"> `
-                                            : `<img src="./../../Brummy/images/default.png" alt="" >`
+                                            : `<img src="./../../Brummy/images/defaultq.png" alt="" >`
                                     }    
                                     </div>
                                 </td>

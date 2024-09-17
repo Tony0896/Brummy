@@ -62,7 +62,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div style="margin: auto;">
+                        <div style="margin: auto;display:none;">
                             <div class="buttom-green buttom" onclick="editarLogoEmpresa(1);">
                                 <span class="text-sm mb-0 span-buttom"> 
                                     Cambiar Logo

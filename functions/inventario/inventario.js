@@ -139,22 +139,22 @@ function nuevoProducto() {
                     
                                 <div class="coolinput div_producto">
                                     <label for="precioCompra" class="text">Precio Compra</label>
-                                    <input name="Precio Compra" type="text" class="capitalize input producto" id="precioCompra" autocomplete="off" maxlength"20"/>
+                                    <input name="Precio Compra" type="number" class="capitalize input producto" id="precioCompra" autocomplete="off" maxlength"20"/>
                                 </div>
                     
                                 <div class="coolinput div_producto div_servicio">
                                     <label for="precioVenta" class="text">Precio Venta</label>
-                                    <input name="Precio Venta" type="text" class="capitalize input producto servicio obligatorio" id="precioVenta" autocomplete="off" maxlength"20"/>
+                                    <input name="Precio Venta" type="number" class="capitalize input producto servicio obligatorio" id="precioVenta" autocomplete="off" maxlength"20"/>
                                 </div>
                     
                                 <div class="coolinput div_producto">
                                     <label for="stockMinimo" class="text">Stock mínimo</label>
-                                    <input name="Stock mínimo" type="text" class="capitalize input producto" id="stockMinimo" autocomplete="off" maxlength"20"/>
+                                    <input name="Stock mínimo" type="number" class="capitalize input producto" id="stockMinimo" autocomplete="off" maxlength"20"/>
                                 </div>
                                 
                                 <div class="coolinput div_producto">
                                     <label for="stockReal" class="text">Stock Real</label>
-                                    <input name="Stock Real" type="text" class="capitalize input producto" id="stockReal" autocomplete="off" maxlength"20"/>
+                                    <input name="Stock Real" type="number" class="capitalize input producto" id="stockReal" autocomplete="off" maxlength"20"/>
                                 </div>
                                 
                             </div>
@@ -196,7 +196,7 @@ function nuevoProducto() {
 
                             // Set allowMultiple property to true
                             $(".my-pond").filepond("allowMultiple", false);
-                            $(".my-pond").filepond("labelIdle", "Agregar Imagen mascota");
+                            $(".my-pond").filepond("labelIdle", "Agregar Imagen");
                             $(".my-pond").filepond("imagePreviewHeight", 170);
                             $(".my-pond").filepond("imageCropAspectRatio", "1:1");
                             $(".my-pond").filepond("imageResizeTargetWidth", 200);
@@ -227,7 +227,7 @@ function nuevoProducto() {
                                 } else {
                                     Swal.fire({
                                         title: "",
-                                        text: "Aún no tienes una imagen de la mascota. ¿Deseas continuar?",
+                                        text: "Aún no tienes una imagen. ¿Deseas continuar?",
                                         icon: "question",
                                         showCancelButton: true,
                                         confirmButtonColor: "#7066e0",
@@ -480,22 +480,22 @@ function verProducto(ID) {
                                                         
                                                         <div class="coolinput div_producto">
                                                             <label for="precioCompra" class="text">Precio Compra</label>
-                                                            <input name="Precio Compra" type="text" class="capitalize input producto" id="precioCompra" autocomplete="off" maxlength"20"/>
+                                                            <input name="Precio Compra" type="number" class="capitalize input producto" id="precioCompra" autocomplete="off" maxlength"20"/>
                                                         </div>
                         
                                                         <div class="coolinput div_producto div_servicio">
                                                             <label for="precioVenta" class="text">Precio Venta</label>
-                                                            <input name="Precio Venta" type="text" class="capitalize input producto servicio obligatorio" id="precioVenta" autocomplete="off" maxlength"20"/>
+                                                            <input name="Precio Venta" type="number" class="capitalize input producto servicio obligatorio" id="precioVenta" autocomplete="off" maxlength"20"/>
                                                         </div>
                         
                                                         <div class="coolinput div_producto">
                                                             <label for="stockMinimo" class="text">Stock mínimo</label>
-                                                            <input name="Stock mínimo" type="text" class="capitalize input producto" id="stockMinimo" autocomplete="off" maxlength"20"/>
+                                                            <input name="Stock mínimo" type="number" class="capitalize input producto" id="stockMinimo" autocomplete="off" maxlength"20"/>
                                                         </div>
                                                         
                                                         <div class="coolinput div_producto">
                                                             <label for="stockReal" class="text">Stock Real</label>
-                                                            <input name="Stock Real" type="text" class="capitalize input producto" id="stockReal" autocomplete="off" maxlength"20"/>
+                                                            <input name="Stock Real" type="number" class="capitalize input producto" id="stockReal" autocomplete="off" maxlength"20"/>
                                                         </div>
                                                     </div>
                         
